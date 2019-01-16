@@ -15,6 +15,7 @@ else
 fi
 
 # This is to collect my codes for above data
+mkdir -p bin
 cd src/				# update the binaries
 make
 make mv
@@ -40,10 +41,12 @@ the-latest-beagle(){
 
 get-beagle-related(){
     beagle=`the-latest-beagle`
+    cd bin
     curl $beagle -o beagle.jar
     echo  Beagle used: $beagle
 
     wget https://faculty.washington.edu/browning/beagle_utilities/beagle2vcf.jar
+    cd ..
 }
 
 if [ ! -f bin/beable2vcf.jar ]; then
