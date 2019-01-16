@@ -9,8 +9,15 @@ fi
 source pars.sh
 source functions.sh
 
+
+# Genotype files
+source $base/data/genotypes/groups.sh
+
+# Map files
+source $base/data/maps/maps.sh
+
 case "$1" in
     'g7327')
 	source fnc/g7237.sh
-	calc_g;;
+	calc-g7327;;
 esac
