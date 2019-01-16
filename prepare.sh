@@ -12,6 +12,7 @@ else
     echo Updating the source data
     cd data
     git pull 			# Update available data
+    cd ..
 fi
 
 # This is to collect my codes for above data
@@ -19,35 +20,7 @@ mkdir -p bin
 cd src/				# update the binaries
 make
 make mv
-
-# Get the latest Beagle
-# -- Notice the name of nightly Beagle is like beagle.ddMMMyy.xyz.jar
-# -- at the following URL
-# -- So, I ordered them on yymmdd, and return the absolute address
-# -- of the latest Beagle.
-the-latest-beagle(){
-    # Notice the name of nightly Beagle is like beagle.ddMMMyy.xyz.jar
-    # at the following URL
-    # So, I ordered them on yymmdd, and return the absolute address
-    # of the latest Beagle.
-
-    echo -n https://faculty.washington.edu/browning/beagle
-    curl -sl https://faculty.washington.edu/browning/beagle |
-        grep beagle.*jar |
-        gawk -F\" '{print $6}' |
-        gawk -F\. '{if(NF==4) print $0}' |
-        bin/latest-beagle
-}
-
-get-beagle-related(){
-    beagle=`the-latest-beagle`
-    cd bin
-    curl $beagle -o beagle.jar
-    echo  Beagle used: $beagle
-
-    wget https://faculty.washington.edu/browning/beagle_utilities/beagle2vcf.jar
-    cd ..
-}
+cd ..
 
 if [ ! -f bin/beable2vcf.jar ]; then
     get-beagle-related
