@@ -5,6 +5,9 @@
 # -- linkage maps from SNPchiMp
 # -- ID information for genotyping methods
 # -- ID and loci to be ignored
+. pars.sh
+. functions.sh
+
 if [ ! -d data ]; then
     echo Copying the source data
     git clone git.nmbu.org:doc/git/nsg/data
