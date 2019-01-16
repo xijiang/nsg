@@ -6,15 +6,15 @@ then
     echo g7327: construct a G matrix for ID genotyped with chip7327 only
 fi
 
-source pars.sh
-source functions.sh
+. fnc/pars.sh
+. fnc/functions.sh
 
 
 # Genotype files
-source $base/data/genotypes/groups.sh
+. $base/data/genotypes/groups.sh
 
 # Map files
-source $base/data/maps/maps.sh
+. $base/data/maps/maps.sh
 
 case "$1" in
     'g7327')
