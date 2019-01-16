@@ -2,8 +2,12 @@
 if [ $# -ne 1 ]
 then
     echo usage: ./run.sh option
+    echo
     echo The current available options:
-    echo g7327: construct a G matrix for ID genotyped with chip7327 only
+    echo
+    echo \ \ g7327: construct a G matrix for ID genotyped with chip7327 only
+    echo
+    echo
 fi
 
 . fnc/pars.sh

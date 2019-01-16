@@ -10,13 +10,13 @@ calc-g7327(){
     done
     
     # make ID info and map ready
-    cat $genotype/$idinfo |
-	gawk '{if(length($3)>5 && length($4)>5) print $3, $1}' >idinfo
+    cat $genotypes/$idinfo |
+	gawk '{if(length($3)>5) print $3, $1}' >idinfo
 
     cat $maps/$map7327 | 
 	gawk '{print $2, $1, $4}' > mapinfo
 
-    $bin/mrg2bgl idinfo mapinfo $LD
+    $bin/mrg2bgl idinfo mapinfo $G7327
 
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
