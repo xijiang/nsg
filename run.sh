@@ -5,8 +5,11 @@ then
     echo
     echo The current available options:
     echo
-    echo \ \ g7327: construct a G matrix for ID genotyped with chip7327 only
+    echo \ \ g7327: G for ID genotyped with chip7327
     echo
+    echo \ \ g600k: G for ID genotyped with chip600k
+    echo
+    echo \ \ hdimp: G for ID genotyped with chip600k and chip7327, impute the latter
     echo
 fi
 
@@ -28,4 +31,7 @@ case "$1" in
     'g600k')
 	source fnc/g600k.sh
 	calc-g600k;;
+    'hdimp')
+	source fnc/hdimp.sh
+	calc-hdimp;;
 esac
