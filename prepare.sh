@@ -5,8 +5,8 @@
 # -- linkage maps from SNPchiMp
 # -- ID information for genotyping methods
 # -- ID and loci to be ignored
-. pars.sh
-. functions.sh
+. fnc/pars.sh
+. fnc/functions.sh
 
 if [ ! -d data ]; then
     echo Copying the source data

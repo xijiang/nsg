@@ -9,8 +9,8 @@ the-latest-beagle(){
     # So, I ordered them on yymmdd, and return the absolute address
     # of the latest Beagle.
 
-    echo -n https://faculty.washington.edu/browning/beagle
-    curl -sl https://faculty.washington.edu/browning/beagle |
+    echo -n https://faculty.washington.edu/browning/beagle/
+    curl -sl https://faculty.washington.edu/browning/beagle/ |
         grep beagle.*jar |
         gawk -F\" '{print $6}' |
         gawk -F\. '{if(NF==4) print $0}' |
