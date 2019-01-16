@@ -13,7 +13,7 @@ fi
 . fnc/pars.sh
 . fnc/functions.sh
 
-mkdir $work
+mkdir -p $work
 
 # Genotype files
 . $base/data/genotypes/groups.sh
