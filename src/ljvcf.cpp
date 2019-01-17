@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
     dummy[i+1] = '/';
   }
 
+  // merged header
   ifstream fin(argv[1]);	// Read the left hand vcf file
   for(string line; getline(fin, line);) // the header
     if(line[1]=='#') cout<<line<<'\n';

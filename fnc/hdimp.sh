@@ -28,6 +28,9 @@ calc-hdimp(){
     cat $genotypes/$idinfo |
 	gawk '{if(length($4)>5) print $4, $1}' >idinfo
 
+    tail -n+2 $maps/$snpchimpv40 |
+    	gawk '{print $13, $11, $12}' > mapinfo
+
     $bin/mrg2bgl idinfo mapinfo $G600K
 
     for chr in {26..1}; do
