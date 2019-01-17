@@ -1,6 +1,6 @@
 CXXFLAGS = -O2 -Wall -std=c++17
 
-target=latest-beagle mrg2bgl vcf2g viewg subMat
+target=latest-beagle mrg2bgl vcf2g viewg subMat ljvcf
 
 all:    ${target}
 
