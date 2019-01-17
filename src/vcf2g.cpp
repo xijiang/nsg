@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
       ss>>aa;
       idg[j++] = aa[0] - '0' + aa[2];
     }
-    for(auto ch:idg) if(ch=='1') ++fq;
+    for(auto ch:idg) fq+=(ch-'0');
     gt.push_back(idg);
     frq.push_back(fq);
   }
