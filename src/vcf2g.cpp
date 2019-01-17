@@ -7,6 +7,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  ios_base::sync_with_stdio(false); // avoid significant overhead
   int            nid{0};
   vector<int>    frq;
   vector<string> gt;
@@ -21,14 +22,13 @@ int main(int argc, char *argv[])
 
   while(getline(cin, line)){
     if(line[0]=='#') continue;
-    string idg(nid*2, '-'), aa;
+    string idg(nid, '-'), aa;
     int    i, j{0}, fq{0};
     stringstream ss(line);
     for(i=0; i<9; ++i) ss>>aa;
     for(i=0; i<nid; ++i){
       ss>>aa;
-      idg[j++] = aa[0];
-      idg[j++] = aa[2];
+      idg[j++] = aa[0] - '0' + aa[2];
     }
     for(auto ch:idg) if(ch=='1') ++fq;
     gt.push_back(idg);

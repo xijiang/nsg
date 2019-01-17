@@ -36,4 +36,3 @@ calc-g(){
 	$bin/vcf2g |
 	$bin/bpxvr1g >$2
 }
-
