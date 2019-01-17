@@ -8,8 +8,9 @@ calc-hdimp(){
     done
     
     # make ID info and map ready. NOTE: ID with LD ($4<5) genoyptes only
+    echo prepare LD genotypes
     cat $genotypes/$idinfo |
-	gawk '{if(length($3)>5 && length($4<5)) print $3, $1}' >idinfo
+	gawk '{if(length($3)>5 && length($4)<5) print $3, $1}' >idinfo
 
     cat $maps/$map7327 | 
 	gawk '{print $2, $1, $4}' > mapinfo
@@ -23,6 +24,7 @@ calc-hdimp(){
     # Prepare HD genotypes in beagle format
     # link the available genotype files here
     # make ID info and map ready
+    echo prepare HD genotypes
     cat $genotypes/$idinfo |
 	gawk '{if(length($4)>5) print $4, $1}' >idinfo
 
@@ -43,6 +45,9 @@ calc-hdimp(){
              out=imp.$chr
     done
 
-    calc-g imp hd-only.G
-    cp gmat.id hd-only.G.id
+    calc-g imp hd-imp.G
+    zcat tmp.1.vcf.gz |
+	grep CHROM |
+	tr '\t' '\n' |
+	tail -n+10 > hd-imp.G.id
 }
