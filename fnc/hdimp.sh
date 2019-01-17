@@ -36,9 +36,11 @@ calc-hdimp(){
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
             gzip -c >hd.$chr.vcf.gz
+    done
 
-	# vcfMrg
-	# {1..26}.vcf.gz ld.{1..26}.vcf.gz ---> tmp.{1..26}.vcf.gz
+    for chr in {26..1}; do
+	# left join ld.vcf to hd.vcf
+	# hd.{1..26}.vcf.gz ld.{1..26}.vcf.gz ---> tmp.{1..26}.vcf.gz
 	$bin/ljvcf <(zcat hd.$chr.vcf.gz) <(zcat ld.$chr.vcf.gz) |
 	    gzip -c >tmp.$chr.vcf.gz
 	

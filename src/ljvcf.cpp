@@ -29,9 +29,10 @@ int main(int argc, char *argv[])
       }
 
     for(string dum, snp, gt;
-	fin>>dum>>dum>>snp>>dum>>dum>>dum>>dum>>dum>>dum;
-	getline(fin, gt))
+	fin>>dum>>dum>>snp>>dum>>dum>>dum>>dum>>dum>>dum;){
+      getline(fin, gt);
       grht[snp]=gt;
+    }
   }
 
   // create a dummy genotype string
