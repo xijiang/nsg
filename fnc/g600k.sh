@@ -10,8 +10,8 @@ calc-g600k(){
     cat $genotypes/$idinfo |
 	gawk '{if(length($4)>5) print $4, $1}' >idinfo
 
-    cat $maps/$map600k | 
-	gawk '{print $2, $1, $4}' > mapinfo
+    tail -n+2 $maps/$snpchimpv40 |
+	gawk '{print $13, $11, $12}' > mapinfo
 
     $bin/mrg2bgl idinfo mapinfo $G600K # linked here already
 
