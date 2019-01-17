@@ -1,4 +1,4 @@
-calc-hdimp()
+calc-hdimp(){
     cd $work
 
     # prepare LD genotypes in beagle format
