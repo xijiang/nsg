@@ -31,6 +31,7 @@ calc-hdimp(){
     tail -n+2 $maps/$snpchimpv40 |
     	gawk '{print $13, $11, $12}' > mapinfo
 
+    echo Left merging genotypes
     $bin/mrg2bgl idinfo mapinfo $G600K
 
     for chr in {26..1}; do
