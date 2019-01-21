@@ -23,10 +23,10 @@
 . $base/data/maps/maps.sh
 
 source fnc/g7327.sh
-calc-g7327;;
+calc-g7327
 
 source fnc/g600k.sh
-calc-g600k;;
+calc-g600k
 
 source fnc/hdimp.sh
-calc-hdimp;;
+calc-hdimp
