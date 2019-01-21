@@ -1,4 +1,7 @@
 calc-hdimp(){
+    # Create a separate work space
+    work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
+    mkdir -p $work
     cd $work
 
     # prepare LD genotypes in beagle format
@@ -9,8 +12,10 @@ calc-hdimp(){
     
     # make ID info and map ready. NOTE: ID with LD ($4<5) genoyptes only
     echo prepare LD genotypes
-    cat $genotypes/$idinfo |
-	gawk '{if(length($3)>5 && length($4)<5) print $3, $1}' >idinfo
+    # cat $genotypes/$idinfo |
+    #     gawk '{if(length($3)>5 && length($4)<5) print $3, $1}' >idinfo
+    tail -n+2 $genotypes/$gtinfo |
+	gawk '{if(length($4)>5 && length($5)<5) print $4, $1}' >idinfo
 
     cat $maps/$map7327 | 
 	gawk '{print $2, $1, $4}' > mapinfo
@@ -25,8 +30,10 @@ calc-hdimp(){
     # link the available genotype files here
     # make ID info and map ready
     echo prepare HD genotypes
-    cat $genotypes/$idinfo |
-	gawk '{if(length($4)>5) print $4, $1}' >idinfo
+    #cat $genotypes/$idinfo |
+    #    gawk '{if(length($4)>5) print $4, $1}' >idinfo
+    tail -n+2 $genotypes/$gtinfo |
+	gawk '{if(length($5)>5) print $5, $1}' >idinfo
 
     tail -n+2 $maps/$snpchimpv40 |
     	gawk '{print $13, $11, $12}' > mapinfo
