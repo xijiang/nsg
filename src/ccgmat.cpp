@@ -11,11 +11,12 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   const int NG{6};		// number of gigabytes needed
-  const int NDBL{NG*1024*1024*1024/8}; // number of genotypes in double 
+  const int NDBL{NG*1024/8*1024*1024}; // number of genotypes in double 
   
   int nid, nlc;
   cin>>nid>>nlc;		// evaluate number of batches here
-  if(nid*nlc
+  if(nid*nlc > NDBL)
+    cout<<"multiple batches needed\n";
 
   double frq[nlc];
   for(auto&f:frq) cin>>f;
