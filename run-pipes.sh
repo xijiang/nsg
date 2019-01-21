@@ -22,11 +22,14 @@
 # Map files
 . $base/data/maps/maps.sh
 
-source fnc/g7327.sh
-calc-g7327
+#cd $base
+#source fnc/g7327.sh
+#calc-g7327
 
+cd $base
 source fnc/g600k.sh
 calc-g600k
 
+cd $base
 source fnc/hdimp.sh
 calc-hdimp
