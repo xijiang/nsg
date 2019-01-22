@@ -22,9 +22,9 @@
 # Map files
 . $base/data/maps/maps.sh
 
-#cd $base
-#source fnc/g7327.sh
-#calc-g7327
+cd $base
+source fnc/g7327.sh
+calc-g7327
 
 cd $base
 source fnc/g600k.sh
