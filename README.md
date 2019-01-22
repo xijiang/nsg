@@ -1,6 +1,19 @@
-# NSG-refactored
-This is to refactor imputation pipeline to check the weird G matrix comparison results.
+# NSG project
+This is to impute genotypes and construct a G matrix
 
-## A more robust and generic way to merge HD and LD genotypes
+## Usage:
 
-Also trying to avoid ID number confusions
+In a bash terminal, run below
+```bash
+git clone https://github.com/xijiang/nsg
+cd nsg
+git submodule init
+git submodule update  # to fetch genotype data and other modules
+
+# if you are running for the first time, run prepare.sh first
+./prepare.sh
+
+# then run below to create various G matrices
+nohup ./run-pipes.sh &
+```
+
