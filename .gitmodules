@@ -1,3 +1,6 @@
 [submodule "data"]
 	path = data
 	url = git@nmbu.org:nsg-data
+[submodule "gmt"]
+	path = gmt
+	url = https://github.com/xijiang/gmat
