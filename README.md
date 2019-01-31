@@ -7,10 +7,8 @@ In a bash terminal, run below
 git clone https://github.com/xijiang/nsg
 
 cd nsg
-git submodule init
-git submodule update  # to fetch genotype data and other modules
 
-# if you are running for the first time, run prepare.sh first
+# Rum below for the first time, run prepare.sh first
 ./prepare.sh
 
 # then run below to create various G matrices

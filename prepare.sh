@@ -8,22 +8,40 @@
 . fnc/pars.sh
 . fnc/functions.sh
 
-if [ ! -d data ]; then
-    echo Copying the source data
-    git clone git.nmbu.org:doc/git/nsg/data
+echo Check submodules
+echo G-matrix related
+if [ ! -d gmt ]; then
+    git clone https://github.com/xijiang/gmat gmt
 else
-    echo Updating the source data
+    cd gmt
+    git pull
+    cd ..
+fi
+
+echo Updating data
+if [ ! -d data ]; then
+    git clone git@nmbu.org:nsg-data data
+else
     cd data
     git pull 			# Update available data
     cd ..
 fi
 
 # This is to collect my codes for above data
-mkdir -p bin
+echo Update binaries
+echo Binaries for NSG
 cd src/				# update the binaries
 make
 make mv
 cd ..
+
+echo Binaries from gmat project
+cd gmt/src
+make
+make mv
+cd -
+
+echo Check if Beagle 5 is ready
 
 if [ ! -f bin/beable2vcf.jar ]; then
     get-beagle-related
