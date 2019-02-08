@@ -20,3 +20,18 @@ nohup ./run-pipes.sh &
 I made the code part public to ease the pipeline setup
 
 The genotype data are stored somewhere else.  Without these data, these codes are almost useless.
+
+
+## ToDo:
+
+todo: change from HBN to animal ID
+
+todo: use p=0.5
+
+todo: kick out HD loci poorly imputed
+
+todo: try MAF
+
+todo: plot G of p=0.5 against others
+
+todo: Understand G as per frequencies

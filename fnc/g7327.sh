@@ -11,7 +11,7 @@ calc-g7327(){
     
     # make ID info and map ready
     # cat $genotypes/$idinfo |
-    #	gawk '{if(length($3)>5) print $3, $1}' >idinfo
+    #	gawk '{if(length($3)>5) print $3, $2}' >idinfo
     tail -n+2 $genotypes/$gtinfo |
 	gawk '{if(length($4)>5) print $4, $1}' >idinfo
 
