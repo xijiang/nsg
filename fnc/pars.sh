@@ -5,5 +5,6 @@ bin=$base/bin
 dat=$base/data
 genotypes=$dat/genotypes
 maps=$dat/maps
+gmt=$base/gmt/bin
 
 ne=150

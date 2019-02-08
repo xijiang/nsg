@@ -30,9 +30,7 @@ get-beagle-related(){
 
 
 calc-g(){
-    for chr in {1..26}; do
-	zcat $1.$chr.vcf.gz
-    done |
-	$bin/vcf2g |
-	$bin/bpxvr1g >$2
+    zcat $1.{1..26}.vcf.gz |
+	$gmt/vcf2g |
+	$gmt/vr1g >$2
 }

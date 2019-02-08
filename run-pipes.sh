@@ -13,6 +13,7 @@
 #    echo
 #fi
 
+echo preparing functions
 . fnc/pars.sh
 . fnc/functions.sh
 
@@ -22,14 +23,18 @@
 # Map files
 . $base/data/maps/maps.sh
 
-cd $base
-source fnc/g7327.sh
-calc-g7327
+# cd $base
+# source fnc/g7327.sh
+# calc-g7327
+# 
+# cd $base
+# source fnc/g600k.sh
+# calc-g600k
+# 
+# cd $base
+# source fnc/hdimp.sh
+# calc-hdimp
 
 cd $base
-source fnc/g600k.sh
-calc-g600k
-
-cd $base
-source fnc/hdimp.sh
-calc-hdimp
+source fnc/imp-rate-345.sh
+t345
