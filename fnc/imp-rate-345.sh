@@ -7,7 +7,7 @@ prepare-a-working-directory(){
     ############################################################
     # Create a separate work space
     # work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
-    work=$base/work/test
+    work=$base/work/$1
     mkdir -p $work
     cd $work
 
@@ -92,7 +92,7 @@ gether-345-hd-genotypes-impute(){
 
 compare-imputed-and-hd-to-find-bad-loci(){
     for chr in {1..26}; do
-	$bin/imperr <(zcat 345.$chr.vcf.gz) \
+	$bin/impErr <(zcat 345.$chr.vcf.gz) \
 		    <(zcat imp.$chr.vcr.gz) > $chr.err
     done
 }
@@ -100,7 +100,7 @@ compare-imputed-and-hd-to-find-bad-loci(){
 
 
 calc-345(){
-    prepare-a-working-directory
+    prepare-a-working-directory t345
 
     gether-345-ld-genotypes
 
@@ -111,27 +111,4 @@ calc-345(){
     gether-345-hd-genotypes-impute
 
     compare-imputed-and-hd-to-find-bad-loci
-}
-
-
-t345(){
-    cd $base/work/test
-    
-    cat $genotypes/$idinfo |
-        gawk '{if(length($3)>5 && length($4)>5) print $4, $2}' > idinfo
-
-    tail -n+2 $maps/$snpchimpv40 |
-    	gawk '{print $13, $11, $12}' > mapinfo
-
-    $bin/mrg2bgl idinfo mapinfo $G600K # merge and split to beagle
-
-    for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-            gzip -c >tmp.$chr.vcf.gz
-
-        java -jar $bin/beagle.jar \
-             gt=tmp.$chr.vcf.gz \
-             ne=$ne \
-             out=345.$chr
-    done
 }
