@@ -1,6 +1,7 @@
 calc-g7327(){
     # Create a separate work space
-    work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
+    #work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
+    work=$base/work/7327-3721
     mkdir -p $work
     cd $work
 

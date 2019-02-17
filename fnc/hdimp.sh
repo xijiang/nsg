@@ -1,6 +1,7 @@
 calc-hdimp(){
     # Create a separate work space
-    work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
+    # work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
+    work=$base/work/imp-4204
     mkdir -p $work
     cd $work
 

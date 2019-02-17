@@ -1,6 +1,7 @@
 calc-g600k(){
     # Create a separate work space
-    work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
+    # work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
+    work=$base/work/600k-828
     mkdir -p $work
     cd $work
 
