@@ -32,6 +32,11 @@ else
 	    ;;
 	345)
 	    source fnc/imp-rate-345.sh
+	    calc-345
+	    ;;
+	debug)
+	    source fnc/imp-rate-345.sh
+	    test-345
 	    ;;
     esac
 fi

@@ -6,8 +6,7 @@
 prepare-a-working-directory(){
     ############################################################
     # Create a separate work space
-    # work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
-    work=$base/work/$1
+    work=$base/work/t345
     mkdir -p $work
     cd $work
 
@@ -17,7 +16,8 @@ prepare-a-working-directory(){
     done
 }
 
-gether-345-ld-genotypes(){
+
+collect-345-ld-genotypes(){
     # find the LD genotypes of the 345 ID
     cat $genotypes/$idinfo |
         gawk '{if(length($3)>5 && length($4)>5) print $3, $2}' > idinfo
@@ -34,7 +34,7 @@ gether-345-ld-genotypes(){
 }
 
 
-gether-483-hd-genotypes(){
+collect-483-hd-genotypes(){
     # find the HD genotypes of those who only genotyped with HD chips
     cat $genotypes/$idinfo |
         gawk '{if(length($4)>5 && length($3)<5) print $4, $2}' >idinfo
@@ -68,8 +68,8 @@ merge-483-345-then-impute(){
 }
 
 
-gether-345-hd-genotypes-impute(){
-    # gether the 345 HD genotypes, and impute the few missing genotypes.
+collect-345-hd-genotypes-impute(){
+    # collect the 345 HD genotypes, and impute the few missing genotypes.
     cat $genotypes/$idinfo |
         gawk '{if(length($3)>5 && length($4)>5) print $4, $2}' > idinfo
 
@@ -98,17 +98,30 @@ compare-imputed-and-hd-to-find-bad-loci(){
 }
 
 
+test-345(){
+    prepare-a-working-directory
+    for chr in {26..1}; do
+	java -jar $bin/beagle.jar \
+	     gt=ld.$chr.vcf.gz \
+	     ne=$ne \
+	     out=ild.$chr
+    done
+    
+    calc-g 345 th345.G
+    calc-g ild tl345.G
+}
+
 
 calc-345(){
-    prepare-a-working-directory t345
+    prepare-a-working-directory
 
-    gether-345-ld-genotypes
+    collect-345-ld-genotypes
 
-    gether-483-hd-genotypes
+    collect-483-hd-genotypes
 
     merge-483-345-then-impute
 
-    gether-345-hd-genotypes-impute
+    collect-345-hd-genotypes-impute
 
     compare-imputed-and-hd-to-find-bad-loci
 }
