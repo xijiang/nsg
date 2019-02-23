@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-  int nid;			// number of ID in source G matrix
+  int nid, nlc;			// number of ID in source G matrix
   ifstream ori(argv[1]);
-  ori>>nid;
+  ori>>nid>>nlc;
   ori.ignore();
 
   double G[nid][nid];		// the source G matrix
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
   {
     ofstream foo(argv[4]);
-    foo<<lst.size()<<'\n';
+    foo<<lst.size()<<' '<<nlc<<'\n';
     for(size_t i=0; i<lst.size(); ++i)
       for(size_t j=0; j<=i; ++j)
 	foo.write((char*)&(G[lst[i]][lst[j]]), sizeof(double));
