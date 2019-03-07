@@ -91,15 +91,66 @@ collect-345-hd-genotypes-impute(){
 
 
 compare-imputed-and-hd-to-find-bad-loci(){
+    # the 345 ID who were genotyped with both LD and HD chips
+    cat $genotypes/$idinfo |
+        gawk '{if(length($3)>5 && length($4)>5) print $2}' > 345.id
+
+    # the imputed loci and their HD and imputed genotypes
+    rm -f *.snp			# if exist
     for chr in {1..26}; do
-	$bin/impErr <(zcat 345.$chr.vcf.gz) \
-		    <(zcat imp.$chr.vcr.gz) > $chr.err
+	zcat 345.$chr.vcf.gz |
+	    tail -n+11 |
+	    gawk '{print $3}' >>345-hd.snp
+	zcat ild.$chr.vcf.gz |
+	    tail -n+11 |
+	    gawk '{print $3}' >>345-ld.snp
+	zcat imp.$chr.vcf.gz |
+	    tail -n+11 |
+	    gawk '{print $3}' >>imp-hd.snp
+	zcat 345.$chr.vcf.gz |
+	    tail -n+11 |
+	    gawk -v chr=$chr '{print $3, chr}' >>snp-chr.snp
     done
+
+    cat 345-hd.snp 345-ld.snp imp-hd.snp |
+	sort |
+	uniq -c |
+	gawk '{if($1==3) print $2}' >shared.snp
+
+    cat 345-hd.snp shared.snp |
+	sort |
+	uniq -c |
+	gawk '{if($1==1) print $2}' >ref.snp
+
+    cat imp-hd.snp shared.snp |
+	sort |
+	uniq -c |
+	gawk '{if($1==1) print $2}' >imp.snp
+
+    cat ref.snp imp.snp |
+	sort |
+	uniq -c |
+	gawk '{if($1==2) print $2}' >check.snp
+
+    cat snp-chr.snp |
+	$bin/pksnp check.snp >snp.chr
+
+    # then find the HD control and imputed genotypes
+    zcat 345.{1..26}.vcf.gz |
+	$bin/subvcf 345.id check.snp >345.gt
+
+    zcat imp.{1..26}.vcf.gz |
+	$bin/subvcf 345.id check.snp >imp.gt
+
+    # calculate: 
+    # SNP chr allele-frq gt-error allele-error
+    paste snp.chr 345.gt imp.gt |
+	gawk '{print $1, $2, $4, $6}' |
+	$bin/impErr >err.txt
 }
 
 
-test-345(){
-    prepare-a-working-directory
+collect-n-impute-345-ld-genotypes(){
     for chr in {26..1}; do
 	java -jar $bin/beagle.jar \
 	     gt=ld.$chr.vcf.gz \
@@ -109,6 +160,13 @@ test-345(){
     
     calc-g 345 th345.G
     calc-g ild tl345.G
+}
+
+
+test-345(){
+    prepare-a-working-directory
+    
+    compare-imputed-and-hd-to-find-bad-loci
 }
 
 
@@ -122,6 +180,8 @@ calc-345(){
     merge-483-345-then-impute
 
     collect-345-hd-genotypes-impute
+
+    collect-n-impute-345-ld-genotypes
 
     compare-imputed-and-hd-to-find-bad-loci
 }
