@@ -2,10 +2,11 @@
 if [ $# != 1 ]; then
     echo Usage: ./run-pipe.sh option
     echo options:
-    echo -e "\t"LD:  construct a G matrix with LD data on 3721 ID
-    echo -e "\t"HD:  construct a G matrix with HD data on 828 ID
-    echo -e "\t"IMP: construct a G matrix with imputation on 4204 ID
-    echo -e "\t"345: using 345 HD and LD infor to test error rate
+    echo -e "\t"LD:   construct a G matrix with LD data on 3721 ID
+    echo -e "\t"HD:   construct a G matrix with HD data on 828 ID
+    echo -e "\t"IMP:  construct a G matrix with imputation on 4204 ID
+    echo -e "\t"345:  using 345 HD and LD infor to test error rate
+    echo -e "\t"gimp: test imputation rate of 17k, 50k panels
 else
     echo preparing functions
     . fnc/pars.sh
@@ -34,9 +35,12 @@ else
 	    source fnc/imp-rate-345.sh
 	    calc-345
 	    ;;
+	gimp)
+	    source fnc/eval-17k+50k.sh
+	    more-imp-rate
 	debug)
-	    source fnc/imp-rate-345.sh
-	    test-345
+	    source fnc/eval-17k+50k.sh
+	    test-imp
 	    ;;
     esac
 fi

@@ -12,7 +12,7 @@ cd nsg
 ./prepare.sh
 
 # then run below to create various G matrices
-nohup ./run-pipes.sh &
+nohup ./run-the-pipe.sh &
 ```
 
 ## Notes:
@@ -24,14 +24,5 @@ The genotype data are stored somewhere else.  Without these data, these codes ar
 
 ## ToDo:
 
-todo: change from HBN to animal ID
-
-todo: use p=0.5
-
-todo: kick out HD loci poorly imputed
-
-todo: try MAF
-
-todo: plot G of p=0.5 against others
-
-todo: Understand G as per frequencies
+1. Appraise 17k and 50k panels
+2. Simulation and estimate GEBV
