@@ -38,6 +38,11 @@ else
 	gimp)
 	    source fnc/eval-17k+50k.sh
 	    more-imp-rate
+	    ;;
+	ne|Ne)
+	    source fnc/ne-fra-606k.sh
+	    calc-ne
+	    ;;
 	debug)
 	    source fnc/eval-17k+50k.sh
 	    test-imp

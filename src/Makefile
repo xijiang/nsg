@@ -1,7 +1,7 @@
 CXXFLAGS = -O2 -Wall -std=c++17
 THREAD = ${CXXFLAGS} -pthread
 
-target=latest-beagle mrg2bgl subMat ljvcf pasteG range subvcf pksnp
+target=latest-beagle mrg2bgl subMat ljvcf pasteG range subvcf pksnp het-rt cls-ave
 
 all:    ${target}
 
