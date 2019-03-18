@@ -44,8 +44,8 @@ else
 	    calc-ne
 	    ;;
 	debug)
-	    source fnc/eval-17k+50k.sh
-	    test-imp
+	    source fnc/step-8-18-50k.sh 
+	    test-debug
 	    ;;
     esac
 fi

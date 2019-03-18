@@ -11,7 +11,7 @@
 
 prepare-a-working-directory(){
     ############################################################
-    # Create a separate work space
+    # Create a working directory
     work=$base/work/17k+50k-panels
     mkdir -p $work
     cd $work
@@ -42,8 +42,8 @@ collect-345-ld-genotypes(){
 
 collect-483-hd-genotypes(){
     # find the HD genotypes of those who only genotyped with HD chips
-    cat $genotypes/$idinfo |
-        gawk '{if(length($4)>5 && length($3)<5) print $4, $2}' >idinfo
+    grep -v ^# $genotypes/genotyped.id |
+	gawk '{if(length($5)>5 && length($4)<5) print $5, $2}' >idinfo
 
     tail -n+2 $maps/$snpchimpv40 |
     	gawk '{print $13, $11, $12}' > mapinfo
@@ -169,10 +169,11 @@ collect-n-impute-345-ld-genotypes(){
 }
 
 
-test-345(){
+step-debug(){
     prepare-a-working-directory
     
-    compare-imputed-and-hd-to-find-bad-loci
+    collect-483-hd-genotypes
+    
 }
 
 
