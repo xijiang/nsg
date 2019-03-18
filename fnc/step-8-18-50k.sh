@@ -81,7 +81,7 @@ collect-step-genotypes(){
     # step genotypes of 345 ID, with prefix 'l'
     for panel in 8k 18k 50k; do
 	echo genotypes of 345 ID with $panel panel
-	$bin/mrg2bgl 345.id panel.map $G600K
+	$bin/mrg2bgl 345.id $panel.map $G600K
 
 	for chr in {26..1}; do
 	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
@@ -144,10 +144,8 @@ error-rates(){
 step-debug(){
     prepare-a-working-directory
 
-    make-id-maps
-
     collect-step-genotypes
-    
+
     step-merge-n-impute
 }
 
