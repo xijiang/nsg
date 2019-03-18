@@ -12,7 +12,7 @@
 prepare-a-working-directory(){
     ############################################################
     # Create a working directory
-    work=$base/work/17k+50k-panels
+    work=$base/work/step--8-18k-50k-hd
     mkdir -p $work
     cd $work
 
@@ -23,19 +23,24 @@ prepare-a-working-directory(){
 }
 
 
-collect-345-ld-genotypes(){
-    # find the LD genotypes of the 345 ID
-    cat $genotypes/$idinfo |
-        gawk '{if(length($3)>5 && length($4)>5) print $3, $2}' > idinfo
+collect-828-hd-genotypes(){
+    grep -v ^# $genotypes/genotyped.id |
+	gawk '{if(length($5)>5) print $5, $2}' >idinfo
 
-    cat $maps/$map7327 | 
-	gawk '{print $2, $1, $4}' > mapinfo
+    tail -n+2 $maps/$snpchimpv40 |
+    	gawk '{print $13, $11, $12}' > mapinfo
 
-    $bin/mrg2bgl idinfo mapinfo $G7327
-    
+    echo Create beagle files
+    $bin/mrgbgl idinfo mapinfo $G600k
+
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-	    gzip -c >ld.$chr.vcf.gz
+	    gzip -c >tmp.$chr.vcf.gz
+	
+	java -jar $bin/beagle.jar \
+	     gt=tmp.$chr.vcf.gz \
+	     ne=$ne \
+	     out=828.$chr
     done
 }
 
@@ -48,12 +53,29 @@ collect-483-hd-genotypes(){
     tail -n+2 $maps/$snpchimpv40 |
     	gawk '{print $13, $11, $12}' > mapinfo
 
-    echo Left merging genotypes
+    echo Create beagle files
     $bin/mrg2bgl idinfo mapinfo $G600K
 
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-            gzip -c >hd.$chr.vcf.gz
+            gzip -c >tmp.$chr.vcf.gz
+    done
+}
+
+
+collect-345-18k-genotypes(){
+    # find the 15k genotypes of the 345 ID
+    grep -v ^# $genotypes/genotyped.id |
+	gawk '{if(length($4)>5 && length($5)>5) print $5, $2}' > idinfo
+
+    tail -n+2 $maps/$snpchimpv40 |
+	$bin/subMap $maps/18k.snp >mapinfo
+
+    $bin/mrg2bgl idinfo mapinfo $G7327
+    
+    for chr in {26..1}; do
+	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
+	    gzip -c >18k.$chr.vcf.gz
     done
 }
 
@@ -172,13 +194,16 @@ collect-n-impute-345-ld-genotypes(){
 step-debug(){
     prepare-a-working-directory
     
-    collect-483-hd-genotypes
-    
+    collect-828-hd-genotypes
+
+#    collect-483-hd-genotypes
 }
 
 
 calc-345(){
     prepare-a-working-directory
+
+    collect-483-hd-genotypes
 
     collect-345-ld-genotypes
 
