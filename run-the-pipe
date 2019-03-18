@@ -45,7 +45,7 @@ else
 	    ;;
 	debug)
 	    source fnc/step-8-18-50k.sh 
-	    test-debug
+	    step-debug
 	    ;;
     esac
 fi
