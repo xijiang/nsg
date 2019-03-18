@@ -69,7 +69,7 @@ collect-step-genotypes(){
     # find the HD genotypes of those who only genotyped with HD chips
     # step genotypes of 483 ID, with prefix 'h'
     for panel in 18k 50k hd; do
-	echo genotypes of 483 ID on $panel panel
+	echo genotypes of 483 ID with $panel panel
 	$bin/mrg2bgl 483.id $panel.map $G600K
 
 	for chr in {26..1}; do
@@ -80,7 +80,7 @@ collect-step-genotypes(){
 
     # step genotypes of 345 ID, with prefix 'l'
     for panel in 8k 18k 50k; do
-	echo genotypes of 345 ID on $panel panel
+	echo genotypes of 345 ID with $panel panel
 	$bin/mrg2bgl 345.id panel.map $G600K
 
 	for chr in {26..1}; do
@@ -106,8 +106,7 @@ mrg-n-imp(){
 
 
 step-merge-n-impute(){
-    #for chr in {26..1}; do
-    chr=26
+    for chr in {26..1}; do
 	mrg-n-imp  8k 18k $chr
 	mrg-n-imp  8k 50k $chr
 	mrg-n-imp  8k  hd $chr
@@ -131,7 +130,13 @@ step-merge-n-impute(){
 	    $bin/subid 345.id |
 	    gzip -c >l18k-50k.$chr.vcf.gz
 	mrg-n-imp 18k-50k hd $chr
-   # done
+    done
+}
+
+
+error-rates(){
+    for chr in {1..26}; do
+    done
 }
 
 
