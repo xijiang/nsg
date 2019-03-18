@@ -136,6 +136,7 @@ step-merge-n-impute(){
 
 error-rates(){
     for chr in {1..26}; do
+	echo $chr
     done
 }
 
