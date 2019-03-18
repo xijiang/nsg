@@ -6,7 +6,7 @@ if [ $# != 1 ]; then
     echo -e "\t"HD:   construct a G matrix with HD data on 828 ID
     echo -e "\t"IMP:  construct a G matrix with imputation on 4204 ID
     echo -e "\t"345:  using 345 HD and LD infor to test error rate
-    echo -e "\t"gimp: test imputation rate of 17k, 50k panels
+    echo -e "\t"step: test imputation rate of 8k, 18k, 50k and HD panels
 else
     echo preparing functions
     . fnc/pars.sh
@@ -35,9 +35,9 @@ else
 	    source fnc/imp-rate-345.sh
 	    calc-345
 	    ;;
-	gimp)
-	    source fnc/eval-17k+50k.sh
-	    more-imp-rate
+	step)
+	    source fnc/step-8-18-50k.sh
+	    step-impute
 	    ;;
 	ne|Ne)
 	    source fnc/ne-fra-606k.sh

@@ -2,17 +2,17 @@
 # This script is to test the imputation rates for various panels
 # Data:
 #  1. Full panel: 606k, 828ID
-#  2. 17k \in 50k \in 606k
-#  3. 8k are majorly \in 17k
+#  2. 18k \in 50k \in 606k
+#  3. 8k are majorly \in 18k
 # Method:
-#  1. Extract 17k, & 50k results of the 345 ID from genotypes of  828ID
+#  1. Extract 18k, & 50k results of the 345 ID from genotypes of  828ID
 #  2. impute and compare
 ##############################################################################
 
 prepare-a-working-directory(){
     ############################################################
     # Create a working directory
-    work=$base/work/step--8-18k-50k-hd
+    work=$base/work/step--8k-18k-50k-hd
     mkdir -p $work
     cd $work
 
@@ -23,15 +23,35 @@ prepare-a-working-directory(){
 }
 
 
-collect-828-hd-genotypes(){
+make-id-maps(){
+    echo collect ID
     grep -v ^# $genotypes/genotyped.id |
-	gawk '{if(length($5)>5) print $5, $2}' >idinfo
+	gawk '{if(length($5)>5) print $5, $2}' >828.id
 
-    tail -n+2 $maps/$snpchimpv40 |
-    	gawk '{print $13, $11, $12}' > mapinfo
+    grep -v ^# $genotypes/genotyped.id |
+	gawk '{if(length($5)>5 && length($4)<5) print $5, $2}' >483.id
 
+    grep -v ^# $genotypes/genotyped.id |
+	gawk '{if(length($5)>5 && length($4)>5) print $5, $2}' >345.id
+    
+    echo Make maps
+    tail -n+2 $maps/current.map |
+    	gawk '{print $13, $11, $12}' >hd.map
+
+    cat hd.map |
+	$bin/subMap $maps/8k.snp     >8k.map
+    
+    cat hd.map |
+	$bin/subMap $maps/18k.snp    >18k.map
+
+    cat hd.map |
+	$bin/subMap $maps/50k.snp    >50k.map
+}
+    
+
+collect-828-hd-genotypes(){
     echo Create beagle files
-    $bin/mrg2bgl idinfo mapinfo $G600K
+    $bin/mrg2bgl 828.id hd.map $G600K
 
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
@@ -45,76 +65,97 @@ collect-828-hd-genotypes(){
 }
 
 
-collect-483-hd-genotypes(){
+collect-step-genotypes(){
     # find the HD genotypes of those who only genotyped with HD chips
-    grep -v ^# $genotypes/genotyped.id |
-	gawk '{if(length($5)>5 && length($4)<5) print $5, $2}' >idinfo
+    # step genotypes of 483 ID, with prefix 'h'
+    for panel in 18k 50k hd; do
+	echo genotypes of 483 ID on $panel panel
+	$bin/mrg2bgl 483.id $panel.map $G600K
 
-    tail -n+2 $maps/$snpchimpv40 |
-    	gawk '{print $13, $11, $12}' > mapinfo
+	for chr in {26..1}; do
+	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
+		gzip -c >h$panel.$chr.vcf.gz
+	done
+    done
 
-    echo Create beagle files
-    $bin/mrg2bgl idinfo mapinfo $G600K
+    # step genotypes of 345 ID, with prefix 'l'
+    for panel in 8k 18k 50k; do
+	echo genotypes of 345 ID on $panel panel
+	$bin/mrg2bgl 345.id panel.map $G600K
 
-    for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-            gzip -c >tmp.$chr.vcf.gz
+	for chr in {26..1}; do
+	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
+		gzip -c >l$panel.$chr.vcf.gz
+	done
     done
 }
 
 
-collect-345-18k-genotypes(){
-    # find the 15k genotypes of the 345 ID
-    grep -v ^# $genotypes/genotyped.id |
-	gawk '{if(length($4)>5 && length($5)>5) print $5, $2}' > idinfo
+mrg-n-imp(){
+    # $1: of lower density map
+    # $2: of higher density map
+    # $3: chr
+    $bin/ljvcf <(zcat h$2.$3.vcf.gz) <(zcat l$1.$3.vcf.gz) |
+	gzip -c >tmp.$chr.vcf.gz
 
-    tail -n+2 $maps/$snpchimpv40 |
-	$bin/subMap $maps/18k.snp >mapinfo
+    java -jar $bin/beagle.jar \
+	 gt=tmp.$3.vcf.gz \
+	 ne=$ne \
+	 out=i$1-$2.$3
+}
 
-    $bin/mrg2bgl idinfo mapinfo $G7327
+
+step-merge-n-impute(){
+    #for chr in {26..1}; do
+    chr=26
+	mrg-n-imp  8k 18k $chr
+	mrg-n-imp  8k 50k $chr
+	mrg-n-imp  8k  hd $chr
+	mrg-n-imp 18k 50k $chr
+	mrg-n-imp 18k  hd $chr
+	mrg-n-imp 50k  hd $chr
+
+	# 8k->18k->50k->hd
+	zcat i8k-18k.$chr.vcf.gz |
+	    $bin/subid 345.id |
+	    gzip -c >l8k-18k.$chr.vcf.gz
+	mrg-n-imp 8k-18k 50k $chr
+
+	zcat i8k-18k-50k.$chr.vcf.gz |
+	    $bin/subid 345.id |
+	    gzip -c >l8k-18k-50k.$chr.vcf.gz
+	mrg-n-imp 8k-18k-50k hd $chr
+
+	# 18k->50k->hd
+	zcat i18k-50k.$chr.vcf.gz |
+	    $bin/subid 345.id |
+	    gzip -c >l18k-50k.$chr.vcf.gz
+	mrg-n-imp 18k-50k hd $chr
+   # done
+}
+
+
+step-debug(){
+    prepare-a-working-directory
+
+    make-id-maps
+
+    collect-step-genotypes
     
-    for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-	    gzip -c >18k.$chr.vcf.gz
-    done
+    step-merge-n-impute
 }
 
 
-merge-483-345-then-impute(){
-    # merge the 483 (HD) and 345 (LD) and impute the 345 to HD level
-    for chr in {26..1}; do
-	# left join ld.vcf to hd.vcf
-	# hd.{1..26}.vcf.gz ld.{1..26}.vcf.gz ---> tmp.{1..26}.vcf.gz
-	$bin/ljvcf <(zcat hd.$chr.vcf.gz) <(zcat ld.$chr.vcf.gz) |
-	    gzip -c >tmp.$chr.vcf.gz
-	
-        java -jar $bin/beagle.jar \
-             gt=tmp.$chr.vcf.gz \
-             ne=$ne \
-             out=imp.$chr
-    done
-}
+step-impute(){
+    prepare-a-working-directory
+    
+    make-id-maps
+    
+    collect-828-hd-genotypes
 
+    collect-step-genotypes
 
-collect-345-hd-genotypes-impute(){
-    # collect the 345 HD genotypes, and impute the few missing genotypes.
-    cat $genotypes/$idinfo |
-        gawk '{if(length($3)>5 && length($4)>5) print $4, $2}' > idinfo
-
-    tail -n+2 $maps/$snpchimpv40 |
-    	gawk '{print $13, $11, $12}' > mapinfo
-
-    $bin/mrg2bgl idinfo mapinfo $G600K # merge and split to beagle
-
-    for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-            gzip -c >tmp.$chr.vcf.gz
-
-        java -jar $bin/beagle.jar \
-             gt=tmp.$chr.vcf.gz \
-             ne=$ne \
-             out=345.$chr
-    done
+    step-merge-n-impute
 }
 
 
@@ -175,45 +216,4 @@ compare-imputed-and-hd-to-find-bad-loci(){
     paste snp.chr 345.gt imp.gt |
 	gawk '{print $1, $2, $4, $6}' |
 	$bin/impErr >err.txt
-}
-
-
-collect-n-impute-345-ld-genotypes(){
-    for chr in {26..1}; do
-	java -jar $bin/beagle.jar \
-	     gt=ld.$chr.vcf.gz \
-	     ne=$ne \
-	     out=ild.$chr
-    done
-    
-    calc-g 345 th345.G
-    calc-g ild tl345.G
-}
-
-
-step-debug(){
-    prepare-a-working-directory
-    
-    collect-828-hd-genotypes
-
-#    collect-483-hd-genotypes
-}
-
-
-calc-345(){
-    prepare-a-working-directory
-
-    collect-483-hd-genotypes
-
-    collect-345-ld-genotypes
-
-    collect-483-hd-genotypes
-
-    merge-483-345-then-impute
-
-    collect-345-hd-genotypes-impute
-
-    collect-n-impute-345-ld-genotypes
-
-    compare-imputed-and-hd-to-find-bad-loci
 }
