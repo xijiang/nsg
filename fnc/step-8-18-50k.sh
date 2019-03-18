@@ -31,7 +31,7 @@ collect-828-hd-genotypes(){
     	gawk '{print $13, $11, $12}' > mapinfo
 
     echo Create beagle files
-    $bin/mrg2bgl idinfo mapinfo $G600k
+    $bin/mrg2bgl idinfo mapinfo $G600K
 
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
