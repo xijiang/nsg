@@ -17,7 +17,7 @@ prepare-a-working-directory(){
     ############################################################
     # Create a working directory
     work=$base/work/step--8k-18k-50k-hd
-    mkdir -p $work/{828,l8k,l18k,l50k,h18k,h50k,hhd}
+    mkdir -p $work/{828,l8k,l18k,l50k,h18k,h50k,hhd,mapid}
     mkdir -p $work/{8-18,8-50,8-hd,18-50,18-hd,50-hd}
     mkdir -p $work/{8-18-50-hd,18-50-hd,tmp}
     cd $work
