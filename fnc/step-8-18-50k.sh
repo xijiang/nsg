@@ -13,13 +13,21 @@
 #    as there are too many files in this working directory
 ##############################################################################
 
+#!/usr/bin/env bash
+
 prepare-a-working-directory(){
     ############################################################
     # Create a working directory
     work=$base/work/step--8k-18k-50k-hd
-    mkdir -p $work/{828,l8k,l18k,l50k,h18k,h50k,hhd,mapid}
-    mkdir -p $work/{8k-18k,8k-50k,8k-hd,18k-50k,18k-hd,50k-hd}
-    mkdir -p $work/{8k-18k-50k-hd,18k-50k-hd,tmp}
+    local low='l8k l18k l50k l8k-18k l8k-18k-50k l18k-50k'
+    local high='h18k h50k hhd 828'
+    local imp='8k-18k 8k-50k 8k-hd 18k-50k 18k-hd 50k-hd 8k-18k-50k 8k-18k-50k-hd 18k-50k-hd'
+    local other='tmp err mapid'
+
+    for dir in $low $high $imp $other; do
+	mkdir -p $work/$dir
+    done
+
     cd $work
 
     # soft link the genotypes here
@@ -99,16 +107,17 @@ collect-step-genotypes(){
 
 
 mrg-n-imp(){
-    # $1: of lower density map
-    # $2: of higher density map
-    # $3: chr
-    $bin/ljvcf <(zcat h$2/$3.vcf.gz) <(zcat l$1/$3.vcf.gz) |
+    local low=$1		# $1: of lower density map
+    local hgh=$2		# $2: of higher density map
+    local chr=$3		# $3: chr
+    
+    $bin/ljvcf <(zcat h$hgh/$chr.vcf.gz) <(zcat l$low/$chr.vcf.gz) |
 	gzip -c >tmp.vcf.gz
 
     java -jar $bin/beagle.jar \
 	 gt=tmp.vcf.gz \
 	 ne=$ne \
-	 out=$1-$2/$3
+	 out=$low-$hgh/$chr
 }
 
 
@@ -121,78 +130,23 @@ step-merge-n-impute(){
 	mrg-n-imp 18k  hd $chr
 	mrg-n-imp 50k  hd $chr
 
-#	# 8k->18k->50k->hd
-#	zcat 8k-18k/$chr.vcf.gz |
-#	    $bin/subid 345.id |
-#	    gzip -c >l8k-18k.$chr.vcf.gz
-#	mrg-n-imp 8k-18k 50k $chr
-#
-#	zcat i8k-18k-50k.$chr.vcf.gz |
-#	    $bin/subid 345.id |
-#	    gzip -c >l8k-18k-50k.$chr.vcf.gz
-#	mrg-n-imp 8k-18k-50k hd $chr
-#
-#	# 18k->50k->hd
-#	zcat i18k-50k.$chr.vcf.gz |
-#	    $bin/subid 345.id |
-#	    gzip -c >l18k-50k.$chr.vcf.gz
-#	mrg-n-imp 18k-50k hd $chr
+	# 8k->18k->50k->hd
+	zcat 8k-18k/$chr.vcf.gz |
+	    $bin/subid mapid/345.id |
+	    gzip -c >l8k-18k/$chr.vcf.gz
+	mrg-n-imp 8k-18k 50k $chr
+
+	zcat 8k-18k-50k/$chr.vcf.gz |
+	    $bin/subid mapid/345.id |
+	    gzip -c >l8k-18k-50k/$chr.vcf.gz
+	mrg-n-imp 8k-18k-50k hd $chr
+
+	# 18k->50k->hd
+	zcat 18k-50k/$chr.vcf.gz |
+	    $bin/subid mapid/345.id |
+	    gzip -c >l18k-50k/$chr.vcf.gz
+	mrg-n-imp 18k-50k hd $chr
     done
-}
-
-
-imputation-rates(){
-    chr=26
-    fra=8k
-    to=18k
-
-    # True genotypes of the 345 ID
-    zcat 828.$chr.vcf.gz |
-	$bin/subid mapid/345.id |
-	gzip -c >tmp/ta.vcf.gz
-
-    # Imputed genotypes of the 345 ID
-    zcat $fra-$to/$chr.vcf.gz |
-	$bin/subid mapid/345.id |
-	gzip -c >tmp/im.vcf.gz
-
-    # Find the relevant SNP set
-    get-snp-fra   $fra-$to/$chr.vcf.gz tmp/l.snp
-    get-snp-fra    h$to.$chr.vcf.gz tmp/h.snp
-    get-snp-fra l$fra-$to.26.vcf.gz tmp/t.snp
-
-    # The reference SNP, or SNP exist on LD chip and used for imputation
-    get-snp-with-count-num 3 tmp/r.snp tmp/{l,h,t}.snp
-    
-    # The imputed SNP loci
-    get-snp-with-count-num 1 tmp/i.snp tmp/{t,r}.snp
-
-    # The true genotypes from
-    zcat tmp/tr
-}
-
-
-step-debug(){
-    prepare-a-working-directory
-
-    step-merge-n-impute
-
-    #imputation-rates
-}
-
-
-step-impute(){
-    prepare-a-working-directory
-    
-    make-id-maps
-    
-    collect-828-hd-genotypes
-
-    collect-step-genotypes
-
-    step-merge-n-impute
-
-#    imputation-rates
 }
 
 
@@ -214,61 +168,71 @@ get-snp-with-count-num(){
 }
 
 
-compare-imputed-and-hd-to-find-bad-loci(){
-    # the 345 ID who were genotyped with both LD and HD chips
-    cat $genotypes/$idinfo |
-        gawk '{if(length($3)>5 && length($4)>5) print $2}' > 345.id
+imputation-rates(){
+    fra=$1
+    to=$2
+    chr=$3
+    
+    # Find the relevant SNP set
+    get-snp-fra    l$fra/$chr.vcf.gz err/l.snp
+    get-snp-fra     h$to/$chr.vcf.gz err/h.snp
+    get-snp-fra $fra-$to/$chr.vcf.gz err/t.snp
 
-    # the imputed loci and their HD and imputed genotypes
-    rm -f *.snp			# if exist
+    # The reference SNP, or SNP exist on LD chip and used for imputation
+    get-snp-with-count-num 3 err/r.snp err/{l,h,t}.snp
+    
+    # The imputed SNP loci
+    get-snp-with-count-num 1 err/i.snp err/{t,r}.snp
+
+    # Imputed genotypes of the 345 ID
+    zcat $fra-$to/$chr.vcf.gz |
+	$bin/subvcf err/{345,i.snp} >err/y
+
+    # True genotypes
+    zcat 828/$chr.vcf.gz |
+	$bin/subvcf err/{345,i.snp} >err/x
+
+    # output the error rates
+    paste err/{x,y} | gawk -v chr=$chr '{print $1, chr, $2, $4}' |
+	$bin/impErr >>err/$fra-$to.err
+}
+
+
+sum-errors(){
+    rm err/*.err
+    gawk '{print $2}' mapid/345.id >err/345
+
     for chr in {1..26}; do
-	zcat 345.$chr.vcf.gz |
-	    tail -n+11 |
-	    gawk '{print $3}' >>345-hd.snp
-	zcat ild.$chr.vcf.gz |
-	    tail -n+11 |
-	    gawk '{print $3}' >>345-ld.snp
-	zcat imp.$chr.vcf.gz |
-	    tail -n+11 |
-	    gawk '{print $3}' >>imp-hd.snp
-	zcat 345.$chr.vcf.gz |
-	    tail -n+11 |
-	    gawk -v chr=$chr '{print $3, chr}' >>snp-chr.snp
+	imputation-rates 8k        18k $chr
+	imputation-rates 8k        50k $chr
+	imputation-rates 8k         hd $chr
+	imputation-rates 18k       50k $chr
+	imputation-rates 18k        hd $chr
+	imputation-rates 50k        hd $chr
+	imputation-rates 8k-18k    50k $chr
+	imputation-rates 18k-50k    hd $chr
+	imputation-rates 8k-18k-50k hd $chr
     done
+}
 
-    cat 345-hd.snp 345-ld.snp imp-hd.snp |
-	sort |
-	uniq -c |
-	gawk '{if($1==3) print $2}' >shared.snp
 
-    cat 345-hd.snp shared.snp |
-	sort |
-	uniq -c |
-	gawk '{if($1==1) print $2}' >ref.snp
+step-debug(){
+    prepare-a-working-directory
 
-    cat imp-hd.snp shared.snp |
-	sort |
-	uniq -c |
-	gawk '{if($1==1) print $2}' >imp.snp
+    sum-errors
+}
 
-    cat ref.snp imp.snp |
-	sort |
-	uniq -c |
-	gawk '{if($1==2) print $2}' >check.snp
 
-    cat snp-chr.snp |
-	$bin/pksnp check.snp >snp.chr
+step-impute(){
+    prepare-a-working-directory
+    
+    make-id-maps
+    
+    collect-828-hd-genotypes
 
-    # then find the HD control and imputed genotypes
-    zcat 345.{1..26}.vcf.gz |
-	$bin/subvcf 345.id check.snp >345.gt
+    collect-step-genotypes
 
-    zcat imp.{1..26}.vcf.gz |
-	$bin/subvcf 345.id check.snp >imp.gt
+    step-merge-n-impute
 
-    # calculate: 
-    # SNP chr allele-frq gt-error allele-error
-    paste snp.chr 345.gt imp.gt |
-	gawk '{print $1, $2, $4, $6}' |
-	$bin/impErr >err.txt
+    imputation-rates
 }

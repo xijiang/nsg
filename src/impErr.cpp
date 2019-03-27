@@ -5,7 +5,13 @@
  * Aiming to find loci that are very poorly imputed
  *
  * Usage:
- *    paste snp.chr ref imp | ./impErr >err.txt
+ *    cat gt | ./impErr >err.txt
+ *
+ * gt has 4 columns:
+ *   1) snp name
+ *   2) chromosome number
+ *   3) genotype true
+ *   4) genotype imputed
  *
  * Output 6 columns in err.txt:
  *   1) SNP name

@@ -14,13 +14,17 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   ios_base::sync_with_stdio(false); // avoid significant overhead
+  if(argc!=3){
+    cerr<<"Usage: "<<argv[0]<<" high-density-vcf low-density-vcf | gzip -c > some.vcf.gz\n";
+    return 1;
+  }
   
   map<string, string> grht;
   vector<string>     idrht;
   {
     ifstream fin(argv[2]); 	// read the right hand vcf file first
     for(string line; getline(fin, line);)
-      if(line.length()>100){	// the ID line;
+      if(line[1]!='#'){	// the ID line;
 	stringstream ss(line);
 	string       id;
 	for(auto i=0; i<9; ++i) ss>>id;
@@ -57,8 +61,8 @@ int main(int argc, char *argv[])
   for(string line; getline(fin, line);){
     cout<<line;
     stringstream ss(line);
-    string       snp;
-    ss>>snp>>snp>>snp;
+    string       chr, bp, snp;
+    ss>>chr>>bp>>snp;
     if(grht.find(snp)==grht.end()) cout<<dummy<<'\n';
     else                           cout<<grht[snp]<<'\n';
   }
