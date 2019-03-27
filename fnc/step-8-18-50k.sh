@@ -8,12 +8,18 @@
 #  1. Extract 18k, & 50k results of the 345 ID from genotypes of  828ID
 #  2. impute and compare
 ##############################################################################
+# ToDo:
+# 1) group the files into different directories
+#    as there are too many files in this working directory
+##############################################################################
 
 prepare-a-working-directory(){
     ############################################################
     # Create a working directory
     work=$base/work/step--8k-18k-50k-hd
-    mkdir -p $work
+    mkdir -p $work/{828,l8k,l18k,l50k,h18k,h50k,hhd}
+    mkdir -p $work/{8-18,8-50,8-hd,18-50,18-hd,50-hd}
+    mkdir -p $work/{8-18-50-hd,18-50-hd,tmp}
     cd $work
 
     # soft link the genotypes here
@@ -26,47 +32,48 @@ prepare-a-working-directory(){
 make-id-maps(){
     echo collect ID
     grep -v ^# $genotypes/genotyped.id |
-	gawk '{if(length($5)>5) print $5, $2}' >828.id
+	gawk '{if(length($5)>5) print $5, $2}' >mapid/828.id
 
     grep -v ^# $genotypes/genotyped.id |
-	gawk '{if(length($5)>5 && length($4)<5) print $5, $2}' >483.id
+	gawk '{if(length($5)>5 && length($4)<5) print $5, $2}' >mapid/483.id
 
     grep -v ^# $genotypes/genotyped.id |
-	gawk '{if(length($5)>5 && length($4)>5) print $5, $2}' >345.id
+	gawk '{if(length($5)>5 && length($4)>5) print $5, $2}' >mapid/345.id
     
     echo Make maps
     tail -n+2 $maps/current.map |
-    	gawk '{print $13, $11, $12}' >hd.map
+    	gawk '{print $13, $11, $12}' >mapid/hd.map
 
     cat hd.map |
-	$bin/subMap $maps/8k.snp     >8k.map
+	$bin/subMap $maps/8k.snp     >mapid/8k.map
     
     cat hd.map |
-	$bin/subMap $maps/18k.snp    >18k.map
+	$bin/subMap $maps/18k.snp    >mapid/18k.map
 
     cat hd.map |
-	$bin/subMap $maps/50k.snp    >50k.map
+	$bin/subMap $maps/50k.snp    >mapid/50k.map
 }
     
 
 collect-828-hd-genotypes(){
+    # It is more accurate to use genotypes of more ID.
+    # Hence the results here will serve a general reference for imputation rates
     echo Create beagle files
-    $bin/mrg2bgl 828.id hd.map $G600K
+    $bin/mrg2bgl mapid/{828.id,hd.map} $G600K
 
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-	    gzip -c >tmp.$chr.vcf.gz
+	    gzip -c >tmp.vcf.gz
 	
 	java -jar $bin/beagle.jar \
-	     gt=tmp.$chr.vcf.gz \
+	     gt=tmp.vcf.gz \
 	     ne=$ne \
-	     out=828.$chr
+	     out=828/$chr
     done
 }
 
 
 collect-step-genotypes(){
-    # find the HD genotypes of those who only genotyped with HD chips
     # step genotypes of 483 ID, with prefix 'h'
     for panel in 18k 50k hd; do
 	echo genotypes of 483 ID with $panel panel
@@ -135,18 +142,40 @@ step-merge-n-impute(){
 
 
 error-rates(){
-    for chr in {1..26}; do
-	echo $chr
-    done
+    chr=26
+    fra=8k
+    to=18k
+
+    mkdir -p ichr		# individual choromosome
+    
+    # True genotypes of the 345 ID
+    zcat 828.$chr.vcf.gz |
+	$bin/subid 345.id |
+	gzip -c >ichr/ta.vcf.gz
+
+    # Imputed genotypes of the 345 ID
+    zcat i$
+
+    # Find the relevant SNP set
+    get-snp-fra   l$fra.$chr.vcf.gz ichr/l.snp
+    get-snp-fra    h$to.$chr.vcf.gz ichr/h.snp
+    get-snp-fra l$fra-$to.26.vcf.gz ichr/t.snp
+
+    # The reference SNP, or SNP exist on LD chip and used for imputation
+    get-snp-with-count-num 3 ichr/r.snp ichr/{l,h,t}.snp
+    
+    # The imputed SNP loci
+    get-snp-with-count-num 1 ichr/i.snp ichr/{t,r}.snp
+
+    # The true genotypes from
+    zcat ichr/tr
 }
 
 
 step-debug(){
     prepare-a-working-directory
 
-    collect-step-genotypes
-
-    step-merge-n-impute
+    error-rates
 }
 
 
@@ -160,6 +189,24 @@ step-impute(){
     collect-step-genotypes
 
     step-merge-n-impute
+}
+
+
+get-snp-fra(){
+    # print SNP names from a VCF file
+    zcat $1 |
+	grep -v ^# |
+	gawk '{print $3}' >$2
+}
+
+
+get-snp-with-count-num(){
+    # print SNP in ${@:3} who appeared $1 times into $2
+    # ${@:3} means the arguments start from 3
+    cat ${@:3} |
+	sort |
+	uniq -c |
+	gawk -v cnt=$1 '{if($1==cnt) print $2}' >$2
 }
 
 
