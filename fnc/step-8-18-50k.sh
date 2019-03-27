@@ -18,8 +18,8 @@ prepare-a-working-directory(){
     # Create a working directory
     work=$base/work/step--8k-18k-50k-hd
     mkdir -p $work/{828,l8k,l18k,l50k,h18k,h50k,hhd,mapid}
-    mkdir -p $work/{8-18,8-50,8-hd,18-50,18-hd,50-hd}
-    mkdir -p $work/{8-18-50-hd,18-50-hd,tmp}
+    mkdir -p $work/{8k-18k,8k-50k,8k-hd,18k-50k,18k-hd,50k-hd}
+    mkdir -p $work/{8k-18k-50k-hd,18k-50k-hd,tmp}
     cd $work
 
     # soft link the genotypes here
@@ -146,36 +146,38 @@ imputation-rates(){
     fra=8k
     to=18k
 
-    mkdir -p ichr		# individual choromosome
-    
     # True genotypes of the 345 ID
     zcat 828.$chr.vcf.gz |
-	$bin/subid 345.id |
-	gzip -c >ichr/ta.vcf.gz
+	$bin/subid mapid/345.id |
+	gzip -c >tmp/ta.vcf.gz
 
     # Imputed genotypes of the 345 ID
-    zcat i$
+    zcat $fra-$to/$chr.vcf.gz |
+	$bin/subid mapid/345.id |
+	gzip -c >tmp/im.vcf.gz
 
     # Find the relevant SNP set
-    get-snp-fra   l$fra.$chr.vcf.gz ichr/l.snp
-    get-snp-fra    h$to.$chr.vcf.gz ichr/h.snp
-    get-snp-fra l$fra-$to.26.vcf.gz ichr/t.snp
+    get-snp-fra   $fra-$to/$chr.vcf.gz tmp/l.snp
+    get-snp-fra    h$to.$chr.vcf.gz tmp/h.snp
+    get-snp-fra l$fra-$to.26.vcf.gz tmp/t.snp
 
     # The reference SNP, or SNP exist on LD chip and used for imputation
-    get-snp-with-count-num 3 ichr/r.snp ichr/{l,h,t}.snp
+    get-snp-with-count-num 3 tmp/r.snp tmp/{l,h,t}.snp
     
     # The imputed SNP loci
-    get-snp-with-count-num 1 ichr/i.snp ichr/{t,r}.snp
+    get-snp-with-count-num 1 tmp/i.snp tmp/{t,r}.snp
 
     # The true genotypes from
-    zcat ichr/tr
+    zcat tmp/tr
 }
 
 
 step-debug(){
     prepare-a-working-directory
 
-    imputation-rates
+    step-merge-n-impute
+
+    #imputation-rates
 }
 
 
