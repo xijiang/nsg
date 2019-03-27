@@ -44,13 +44,13 @@ make-id-maps(){
     tail -n+2 $maps/current.map |
     	gawk '{print $13, $11, $12}' >mapid/hd.map
 
-    cat hd.map |
+    cat mapid/hd.map |
 	$bin/subMap $maps/8k.snp     >mapid/8k.map
     
-    cat hd.map |
+    cat mapid/hd.map |
 	$bin/subMap $maps/18k.snp    >mapid/18k.map
 
-    cat hd.map |
+    cat mapid/hd.map |
 	$bin/subMap $maps/50k.snp    >mapid/50k.map
 }
     
@@ -102,13 +102,13 @@ mrg-n-imp(){
     # $1: of lower density map
     # $2: of higher density map
     # $3: chr
-    $bin/ljvcf <(zcat h$2.$3.vcf.gz) <(zcat l$1.$3.vcf.gz) |
-	gzip -c >tmp.$chr.vcf.gz
+    $bin/ljvcf <(zcat h$2/$3.vcf.gz) <(zcat l$1/$3.vcf.gz) |
+	gzip -c >tmp.vcf.gz
 
     java -jar $bin/beagle.jar \
-	 gt=tmp.$3.vcf.gz \
+	 gt=tmp.vcf.gz \
 	 ne=$ne \
-	 out=i$1-$2.$3
+	 out=$1-$2/$3
 }
 
 
@@ -121,22 +121,22 @@ step-merge-n-impute(){
 	mrg-n-imp 18k  hd $chr
 	mrg-n-imp 50k  hd $chr
 
-	# 8k->18k->50k->hd
-	zcat i8k-18k.$chr.vcf.gz |
-	    $bin/subid 345.id |
-	    gzip -c >l8k-18k.$chr.vcf.gz
-	mrg-n-imp 8k-18k 50k $chr
-
-	zcat i8k-18k-50k.$chr.vcf.gz |
-	    $bin/subid 345.id |
-	    gzip -c >l8k-18k-50k.$chr.vcf.gz
-	mrg-n-imp 8k-18k-50k hd $chr
-
-	# 18k->50k->hd
-	zcat i18k-50k.$chr.vcf.gz |
-	    $bin/subid 345.id |
-	    gzip -c >l18k-50k.$chr.vcf.gz
-	mrg-n-imp 18k-50k hd $chr
+#	# 8k->18k->50k->hd
+#	zcat 8k-18k/$chr.vcf.gz |
+#	    $bin/subid 345.id |
+#	    gzip -c >l8k-18k.$chr.vcf.gz
+#	mrg-n-imp 8k-18k 50k $chr
+#
+#	zcat i8k-18k-50k.$chr.vcf.gz |
+#	    $bin/subid 345.id |
+#	    gzip -c >l8k-18k-50k.$chr.vcf.gz
+#	mrg-n-imp 8k-18k-50k hd $chr
+#
+#	# 18k->50k->hd
+#	zcat i18k-50k.$chr.vcf.gz |
+#	    $bin/subid 345.id |
+#	    gzip -c >l18k-50k.$chr.vcf.gz
+#	mrg-n-imp 18k-50k hd $chr
     done
 }
 
@@ -175,11 +175,7 @@ imputation-rates(){
 step-debug(){
     prepare-a-working-directory
 
-    make-id-maps
-    
-    collect-828-hd-genotypes
-
-    collect-step-genotypes
+    imputation-rates
 }
 
 
@@ -194,7 +190,7 @@ step-impute(){
 
     step-merge-n-impute
 
-    imputation-rates
+#    imputation-rates
 }
 
 
