@@ -77,22 +77,22 @@ collect-step-genotypes(){
     # step genotypes of 483 ID, with prefix 'h'
     for panel in 18k 50k hd; do
 	echo genotypes of 483 ID with $panel panel
-	$bin/mrg2bgl 483.id $panel.map $G600K
+	$bin/mrg2bgl mapid/483.id mapid/$panel.map $G600K
 
 	for chr in {26..1}; do
 	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-		gzip -c >h$panel.$chr.vcf.gz
+		gzip -c >h$panel/$chr.vcf.gz
 	done
     done
 
     # step genotypes of 345 ID, with prefix 'l'
     for panel in 8k 18k 50k; do
 	echo genotypes of 345 ID with $panel panel
-	$bin/mrg2bgl 345.id $panel.map $G600K
+	$bin/mrg2bgl mapid/345.id mapid/$panel.map $G600K
 
 	for chr in {26..1}; do
 	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-		gzip -c >l$panel.$chr.vcf.gz
+		gzip -c >l$panel/$chr.vcf.gz
 	done
     done
 }
@@ -141,7 +141,7 @@ step-merge-n-impute(){
 }
 
 
-error-rates(){
+imputation-rates(){
     chr=26
     fra=8k
     to=18k
@@ -175,7 +175,11 @@ error-rates(){
 step-debug(){
     prepare-a-working-directory
 
-    error-rates
+    make-id-maps
+    
+    collect-828-hd-genotypes
+
+    collect-step-genotypes
 }
 
 
@@ -189,6 +193,8 @@ step-impute(){
     collect-step-genotypes
 
     step-merge-n-impute
+
+    imputation-rates
 }
 
 
