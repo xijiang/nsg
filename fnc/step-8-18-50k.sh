@@ -172,9 +172,10 @@ imputation-rates(){
     fra=$1
     to=$2
     chr=$3
+    ref=$4
     
     # Find the relevant SNP set
-    get-snp-fra    l$fra/$chr.vcf.gz err/l.snp
+    get-snp-fra    l$ref/$chr.vcf.gz err/l.snp
     get-snp-fra     h$to/$chr.vcf.gz err/h.snp
     get-snp-fra $fra-$to/$chr.vcf.gz err/t.snp
 
@@ -203,15 +204,15 @@ sum-errors(){
     gawk '{print $2}' mapid/345.id >err/345
 
     for chr in {1..26}; do
-	imputation-rates 8k        18k $chr
-	imputation-rates 8k        50k $chr
-	imputation-rates 8k         hd $chr
-	imputation-rates 18k       50k $chr
-	imputation-rates 18k        hd $chr
-	imputation-rates 50k        hd $chr
-	imputation-rates 8k-18k    50k $chr
-	imputation-rates 18k-50k    hd $chr
-	imputation-rates 8k-18k-50k hd $chr
+	imputation-rates 8k         18k $chr  8k
+	imputation-rates 8k         50k $chr  8k
+	imputation-rates 8k          hd $chr  8k
+	imputation-rates 8k-18k     50k $chr  8k
+	imputation-rates 8k-18k-50k  hd $chr  8k
+	imputation-rates 18k        50k $chr 18k
+	imputation-rates 18k         hd $chr 18k
+	imputation-rates 18k-50k     hd $chr 18k
+	imputation-rates 50k         hd $chr 50k
     done
 }
 
