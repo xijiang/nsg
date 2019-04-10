@@ -200,7 +200,7 @@ imputation-rates(){
 
 
 sum-errors(){
-    rm err/*.err
+    rm -f err/*.err
     gawk '{print $2}' mapid/345.id >err/345
 
     for chr in {1..26}; do
