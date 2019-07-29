@@ -1,23 +1,23 @@
 calc-g600k(){
     # Create a separate work space
-    # work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
-    work=$base/work/600k-828
+    work=$base/work/600k.g
     mkdir -p $work
     cd $work
 
     # link the available genotype files here
-    for i in $G600K; do
-	ln -s $genotypes/$i .
-    done
+    gfiles=`ls $genotypes/600k/`
+    ln -s $genotypes/600k/* .
     
     # make ID info and map ready
-    tail -n+2 $genotypes/$idinfo |
-	gawk '{if(length($4)>5) print $4, $2}' > idinfo
-
-    tail -n+2 $maps/$snpchimpv40 |
+    tail -n+2 $ids/id.lst |
+	gawk '{if(length($4)>2 && $7<2000 && $10==1) print $4, $2}' > idinfo
+    tail -n+2 $ids/id.lst |
+	gawk '{if(length($4)>2 && $7>1999 && $9==10) print $4, $2}' >>idinfo
+    
+    tail -n+2 $maps/sheep-snpchimp-v.4 |
 	gawk '{print $13, $11, $12}' > mapinfo
 
-    $bin/mrg2bgl idinfo mapinfo $G600K # linked here already
+    $bin/mrg2bgl idinfo mapinfo $gfiles # linked here already
 
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
@@ -31,4 +31,6 @@ calc-g600k(){
 
     calc-g imp hd-only.G
     cp gmat.id hd-only.G.id
+    cat hd-only.G |
+	$gmt/g2-3c hd-only.G.id >600k.G
 }

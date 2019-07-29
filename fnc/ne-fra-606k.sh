@@ -4,18 +4,30 @@
 # -Delta(F) = b
 
 calc-ne(){
-    work=$base/work/600k-828
+    if [ ! -d $base/work/600k.g ]; then
+	source fnc/g600k.sh
+	calc-g600k
+    fi
+    
+    work=$base/work/ne-from-hd
+    mkdir -p $work
     cd $work
 
+    ln -s $base/work/600k.g/imp.{1..26}.vcf.gz .
+
     # animal ID and year
-    cat $genotypes/$idinfo |
-	gawk '{if(length($4)>5) print $2, $5}' |
-	sort -k1 >id-yr	# sort on animal ID
+    cat $genotypes/ids/id.lst |
+	gawk '{if(length($4)>2 && $7<2000 && $10==1) print $2, $7}' > id.tmp
+    cat $genotypes/ids/id.lst |
+	gawk '{if(length($4)>2 && $7>1999 && $9==10) print $2, $7}' >>id.tmp
+
+    cat id.tmp |
+	sort -nk1 >id-yr	# sort on animal ID
     
     # calculate het% on animal ID => animal ID and log(het)
     zcat imp.{1..26}.vcf.gz |
 	$bin/het-rt |
-	sort -k1 >id-var
+	sort -nk1 >id-var
 
     # year and ave(log(het))
     paste id-yr id-var |
@@ -23,6 +35,3 @@ calc-ne(){
 	sort -nk1 |
 	$bin/cls-ave > yr.ave
 }
-
-	
-

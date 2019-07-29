@@ -20,11 +20,8 @@ fi
 
 echo Updating data
 if [ ! -d data ]; then
-    git clone git@nmbu.org:nsg-data data
-else
-    cd data
-    git pull 			# Update available data
-    cd ..
+    #git clone git.nmbu.org:data/git/nsg-data data
+    echo please copy the genotypes, maps and other info to data/
 fi
 
 # This is to collect my codes for above data

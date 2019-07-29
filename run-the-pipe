@@ -2,8 +2,11 @@
 if [ $# != 1 ]; then
     echo Usage: ./run-pipe.sh option
     echo options:
-    echo -e "\t"LD:   construct a G matrix with LD data on 3721 ID
-    echo -e "\t"HD:   construct a G matrix with HD data on 828 ID
+    echo -e "\t"LD:   construct a G matrix with LD data
+    echo -e "\t"HD:   construct a G matrix with HD data
+    echo -e "\t"17k:  construct a G matrix with 17k loci, alpha version
+    echo -e "\t"ne:   calculate Ne with HD and GBS data
+    echo -e "\t"l2m:  impute 7k to 17k, and calculate a G matrix
     echo -e "\t"IMP:  construct a G matrix with imputation on 4204 ID
     echo -e "\t"345:  using 345 HD and LD infor to test error rate
     echo -e "\t"step: test imputation rate of 8k, 18k, 50k and HD panels
@@ -11,12 +14,6 @@ else
     echo preparing functions
     . fnc/pars.sh
     . fnc/functions.sh
-
-    # Genotype files
-    . $base/data/genotypes/groups.sh
-
-    # Map files
-    . $base/data/maps/maps.sh
 
     case "$1" in
 	LD|ld|Ld)
@@ -26,6 +23,14 @@ else
 	HD|hd|Hd)
 	    source fnc/g600k.sh
 	    calc-g600k
+	    ;;
+	17k|17K)
+	    source fnc/g17ka.sh
+	    calc-ga17k		# with genotype 17k alpha
+	    ;;
+	l2m|L2m|L2M|l2M)
+	    source fnc/l2m.sh
+	    l2m
 	    ;;
 	IMP|imp|Imp)
 	    source fnc/hdimp.sh

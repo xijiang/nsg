@@ -1,19 +1,19 @@
-calc-g7327(){
+calc-ga17k(){
     # Create a separate work space
     #work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
-    work=$base/work/7327.g
+    work=$base/work/a17k.g
     mkdir -p $work
     cd $work
 
     # link the available genotype files here
-    gfiles=`ls $genotypes/7327/`
-    ln -s $genotypes/7327/* .
+    gfiles=`ls $genotypes/a17k/`
+    ln -s $genotypes/a17k/* .
     
     # make ID info and map ready
     tail -n+2 $ids/id.lst |
-	gawk '{if(length($3)>2 && $9==10 && $7>1999) print $3, $2}' >idinfo
+	gawk '{if(length($6)>2 && $9==10 && $7>1999) print $6, $2}' >idinfo
     
-    cat $maps/7327.map | 
+    cat $maps/a17k.map | 
 	gawk '{print $2, $1, $4}' > mapinfo
 
     $bin/mrg2bgl idinfo mapinfo $gfiles
@@ -28,8 +28,8 @@ calc-g7327(){
              out=imp.$chr
     done
 
-    calc-g imp ld-only.G
-    cp gmat.id ld-only.G.id
-    cat ld-only.G |
-	$gmt/g2-3c ld-only.G.id >7327.G
+    calc-g imp 17k-a.G
+    cp gmat.id 17k-a.G.id
+    cat 17k-a.G |
+	$gmt/g2-3c 17k-a.G.id >a17k.G
 }
