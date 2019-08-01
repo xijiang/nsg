@@ -16,11 +16,12 @@ calc-ne(){
     ln -s $base/work/600k.g/imp.{1..26}.vcf.gz .
 
     # animal ID and year
-    cat $genotypes/ids/id.lst |
+    cat $ids/id.lst |
 	gawk '{if(length($4)>2 && $7<2000 && $10==1) print $2, $7}' > id.tmp
-    cat $genotypes/ids/id.lst |
+    cat $ids/id.lst |
 	gawk '{if(length($4)>2 && $7>1999 && $9==10) print $2, $7}' >>id.tmp
-
+    # NOte I tested that the obove two sets don't share ID.
+    
     cat id.tmp |
 	sort -nk1 >id-yr	# sort on animal ID
     
@@ -34,4 +35,11 @@ calc-ne(){
 	gawk '{print $2, $4}' |
 	sort -nk1 |
 	$bin/cls-ave > yr.ave
+
+    # 2.36 yr/generation, Ne = 116
+    cp $base/fnc/ne.jl .
+    cp yr.ave deltaf.yr
+    ./ne.jl
+    gawk '{if($1>1999) print $0}' yr.ave > deltaf.yr
+    ./ne.jl
 }

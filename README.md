@@ -15,14 +15,7 @@ cd nsg
 nohup ./run-the-pipe.sh &
 ```
 
-## Notes:
-
-I made the code part public to ease the pipeline setup
-
-The genotype data are stored somewhere else.  Without these data, these codes are almost useless.
-
+Since the genotypes and maps part are private, I stored them at some separate place.  Copy them under this nsg directory, and name the directory `data'.
 
 ## ToDo:
 
-1. Appraise 17k and 50k panels
-2. Simulation and estimate GEBV
