@@ -5,27 +5,29 @@
 
 prepare-a-working-directory(){
     ############################################################
-    # Create a separate work space
-    work=$base/work/t345
+    # Pre-requests
+    HD=`ls $genotypes/600k`
+    LD=`ls $genotypes/7327`
+
+    # Create a work space
+    work=$base/work/345.test
     mkdir -p $work
     cd $work
 
-    # soft link the genotypes here
-    for i in $G7327 $G600K; do
-	ln -sf $genotypes/$i .
-    done
+    ln -s $genotypes/600k/* .
+    ln -s $genotypes/7327/* .
 }
 
 
 collect-345-ld-genotypes(){
     # find the LD genotypes of the 345 ID
-    cat $genotypes/$idinfo |
-        gawk '{if(length($3)>5 && length($4)>5) print $3, $2}' > idinfo
+    tail -n+2 $ids/id.lst |
+        gawk '{if(length($3)>5 && length($4)>5) print $3, $2}' > ld.id
 
-    cat $maps/$map7327 | 
-	gawk '{print $2, $1, $4}' > mapinfo
+    cat $maps/7327.map | 
+	gawk '{print $2, $1, $4}' > ld.map
 
-    $bin/mrg2bgl idinfo mapinfo $G7327
+    $bin/mrg2bgl ld.id ld.map $LD
     
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
@@ -36,14 +38,13 @@ collect-345-ld-genotypes(){
 
 collect-483-hd-genotypes(){
     # find the HD genotypes of those who only genotyped with HD chips
-    cat $genotypes/$idinfo |
-        gawk '{if(length($4)>5 && length($3)<5) print $4, $2}' >idinfo
+    tail -n+2 $ids/id.lst |
+        gawk '{if(length($4)>5 && length($3)<5) print $4, $2}' >hd.id
 
-    tail -n+2 $maps/$snpchimpv40 |
-    	gawk '{print $13, $11, $12}' > mapinfo
+    tail -n+2 $maps/sheep-snpchimp-v.4 |
+    	gawk '{print $13, $11, $12}' > hd.map
 
-    echo Left merging genotypes
-    $bin/mrg2bgl idinfo mapinfo $G600K
+    $bin/mrg2bgl hd.id hd.map $HD
 
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
@@ -70,13 +71,13 @@ merge-483-345-then-impute(){
 
 collect-345-hd-genotypes-impute(){
     # collect the 345 HD genotypes, and impute the few missing genotypes.
-    cat $genotypes/$idinfo |
-        gawk '{if(length($3)>5 && length($4)>5) print $4, $2}' > idinfo
+    tail -n+2 $ids/id.lst |
+        gawk '{if(length($3)>5 && length($4)>5) print $4, $2}' > hd345.id
 
-    tail -n+2 $maps/$snpchimpv40 |
-    	gawk '{print $13, $11, $12}' > mapinfo
+    tail -n+2 $maps/sheep-snpchimp-v.4 |
+    	gawk '{print $13, $11, $12}' > hd345.map
 
-    $bin/mrg2bgl idinfo mapinfo $G600K # merge and split to beagle
+    $bin/mrg2bgl hd345.id hd345.map $HD # merge and split to beagle
 
     for chr in {26..1}; do
 	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
@@ -183,5 +184,5 @@ calc-345(){
 
     collect-n-impute-345-ld-genotypes
 
-    compare-imputed-and-hd-to-find-bad-loci
+#   compare-imputed-and-hd-to-find-bad-loci
 }

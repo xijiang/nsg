@@ -7,10 +7,11 @@ if [ $# != 1 ]; then
     echo -e "\t"17k:  construct a G matrix with 17k loci, alpha version
     echo -e "\t"ned:  calculate Ne with HD data
     echo -e "\t"nel:  calculate Ne with LD data
-    echo -e "\t"gbs:  calculate NE with GBS data (in progress)
+    echo -e "\t"frq:  plot allele frequencies in LD MD and HD data
+    echo -e "\t"345:  using 345 HD and LD infor to test error rate
+    echo -e "\t"gbs:  calculate NE with GBS data \(in progress\)
     echo -e "\t"l2m:  impute 7k to 17k, and calculate a G matrix
     echo -e "\t"IMP:  construct a G matrix with imputation on 4204 ID
-    echo -e "\t"345:  using 345 HD and LD infor to test error rate
     echo -e "\t"step: test imputation rate of 8k, 18k, 50k and HD panels
 else
     echo preparing functions
@@ -30,6 +31,22 @@ else
 	    source fnc/g17ka.sh
 	    calc-ga17k		# with genotype 17k alpha
 	    ;;
+	ned|Ned)
+	    source fnc/ne-fra-606k.sh
+	    calc-ne
+	    ;;
+	nel|Nel)
+	    source fnc/ne-fra-7327.sh
+	    calc-ne
+	    ;;
+	Frq|frq)
+	    source fnc/freq.sh
+	    plot-freq
+	    ;;
+	345)
+	    source fnc/imp-rate-345.sh
+	    calc-345
+	    ;;
 	l2m|L2m|L2M|l2M)
 	    source fnc/l2m.sh
 	    l2m
@@ -38,21 +55,9 @@ else
 	    source fnc/hdimp.sh
 	    calc-hdimp
 	    ;;
-	345)
-	    source fnc/imp-rate-345.sh
-	    calc-345
-	    ;;
 	step)
 	    source fnc/step-8-18-50k.sh
 	    step-impute
-	    ;;
-	ned|Ned)
-	    source fnc/ne-fra-606k.sh
-	    calc-ne
-	    ;;
-	nel|Nel)
-	    source fnc/ne-fra-7327.sh
-	    calc-ne
 	    ;;
 	debug)
 	    source fnc/step-8-18-50k.sh 
