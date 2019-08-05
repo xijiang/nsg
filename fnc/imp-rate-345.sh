@@ -14,8 +14,8 @@ prepare-a-working-directory(){
     mkdir -p $work
     cd $work
 
-    ln -s $genotypes/600k/* .
-    ln -s $genotypes/7327/* .
+    ln -sf $genotypes/600k/* .
+    ln -sf $genotypes/7327/* .
 }
 
 
@@ -158,16 +158,42 @@ collect-n-impute-345-ld-genotypes(){
 	     ne=$ne \
 	     out=ild.$chr
     done
-    
-    calc-g 345 th345.G
-    calc-g ild tl345.G
+
+    cat ld.id |
+	gawk '{print $2}' >345.id
+    for i in 345 ild imp; do	# HD, LD and imputed
+	calc-g $i $i.G
+	zcat $i.1.vcf.gz |
+	    head |
+	    tail -1 |
+	    tr '\t' '\n' |
+	    tail -n+10 >tmp.id
+	$bin/subMat $i.G tmp.id 345.id tmp.G
+	cat tmp.G |
+	    $gmt/g2-3c 345.id >$i.3c
+    done
+
+    $base/fnc/qqplotG.jl
+    convert qqplot.ps qqplot.eps
 }
 
 
 test-345(){
     prepare-a-working-directory
     
-    compare-imputed-and-hd-to-find-bad-loci
+    cat ld.id |
+	gawk '{print $2}' >345.id
+    for i in 345 ild imp; do	# HD, LD and imputed
+	calc-g $i $i.G
+	zcat $i.1.vcf.gz |
+	    head |
+	    tail -1 |
+	    tr '\t' '\n' |
+	    tail -n+10 >tmp.id
+	$bin/subMat $i.G tmp.id 345.id s$i.G
+	cat s$i.G |
+	    $gmt/g2-3c 345.id >$i.3c
+    done
 }
 
 

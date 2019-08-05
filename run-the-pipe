@@ -47,9 +47,9 @@ else
 	    source fnc/imp-rate-345.sh
 	    calc-345
 	    ;;
-	l2m|L2m|L2M|l2M)
-	    source fnc/l2m.sh
-	    l2m
+	l2m|L2m|L2M|l2M)	# impute LD to MD, and calculate a G for all these ID
+	    source fnc/ld2md.sh
+	    ld2md
 	    ;;
 	IMP|imp|Imp)
 	    source fnc/hdimp.sh
@@ -60,8 +60,8 @@ else
 	    step-impute
 	    ;;
 	debug)
-	    source fnc/step-8-18-50k.sh 
-	    step-debug
+	    source fnc/imp-rate-345.sh 
+	    test-345
 	    ;;
     esac
 fi

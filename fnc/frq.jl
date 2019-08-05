@@ -12,5 +12,3 @@ p3 = histogram(hd, bins=50, normalize=true, label="Chip HD", xlabel="Allele freq
 frq = plot(p1,p2,p3, layout=(3,1))
 
 savefig(frq, "frq.ps")
-
-convert frq.ps frq.eps
