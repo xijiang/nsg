@@ -1,6 +1,7 @@
 prepare-files(){
     # Description:
-    # Impute LD(7327) to MD 17k (16227), all 7325 shared, 7029 autosome SNP shared 
+    # Impute LD(7327) to MD 17k (16227), all 7325 shared, 7029 autosome SNP shared
+    # LD has 7031 autosome loci, including some repeated.
     # then calculate a G matrix of these individual
 
     # a work space
@@ -19,7 +20,7 @@ prepare-files(){
 collect-ld-genotypes(){
     # find the LD genotypes of the 345 ID
     tail -n+2 $ids/id.lst |
-        gawk '{if(length($3)>5) print $3, $2}' > ld.id
+        gawk '{if(length($3)>5 && $9==10) print $3, $2}' > ld.id
 
     cat $maps/7327.map | 
 	gawk '{print $2, $1, $4}' > ld.map
@@ -36,7 +37,7 @@ collect-ld-genotypes(){
 collect-md-genotypes(){
     # find the HD genotypes of those who only genotyped with HD chips
     tail -n+2 $ids/id.lst |
-        gawk '{if(length($6)>5) print $6, $2}' >md.id
+        gawk '{if(length($6)>5 && $9==10) print $6, $2}' >md.id
 
     tail -n+2 $maps/a17k.map |
     	gawk '{print $2, $1, $4}' > md.map
@@ -65,6 +66,14 @@ merge-md-ld-then-impute(){
     done
 
     calc-g imp ld-md.G
+    zcat imp.1.vcf.gz |
+	head |
+	tail -1 |
+	tr '\t' '\n' |
+	tail -n+10 >lm.id
+    cat ld-md.G |
+	$gmt/g2-3c lm.id >lim.3c
+
 }
 
 
