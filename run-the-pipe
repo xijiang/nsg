@@ -9,8 +9,8 @@ if [ $# != 1 ]; then
     echo -e "\t"nel:  calculate Ne with LD data
     echo -e "\t"frq:  plot allele frequencies in LD MD and HD data
     echo -e "\t"345:  using 345 HD and LD infor to test error rate
-    echo -e "\t"gbs:  calculate NE with GBS data \(in progress\)
     echo -e "\t"l2m:  impute 7k to 17k, and calculate a G matrix
+    echo -e "\t"gbs:  calculate NE with GBS data \(in progress\)
     echo -e "\t"IMP:  construct a G matrix with imputation on 4204 ID
     echo -e "\t"step: test imputation rate of 8k, 18k, 50k and HD panels
 else

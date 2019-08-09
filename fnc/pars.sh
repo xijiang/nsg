@@ -4,8 +4,9 @@ base=`pwd`
 bin=$base/bin
 dat=$base/data
 genotypes=$dat/genotypes
+phenotypes=$dat/phenotypes
 maps=$dat/maps
 ids=$dat/ids
 gmt=$base/gmt/bin
 
-ne=150
+ne=100
