@@ -9,14 +9,6 @@
 . fnc/functions.sh
 
 echo Check submodules
-echo G-matrix related
-if [ ! -d gmt ]; then
-    git clone https://github.com/xijiang/gmat gmt
-else
-    cd gmt
-    git pull
-    cd ..
-fi
 
 echo Updating data
 if [ ! -d data ]; then
@@ -31,12 +23,6 @@ cd src/				# update the binaries
 make
 make mv
 cd ..
-
-echo Binaries from gmat project
-cd gmt/src
-make
-make mv
-cd -
 
 echo Check if Beagle 5 is ready
 
