@@ -7,6 +7,5 @@ genotypes=$dat/genotypes
 phenotypes=$dat/phenotypes
 maps=$dat/maps
 ids=$dat/ids
-gmt=$base/gmt/bin
 
 ne=100

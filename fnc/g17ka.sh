@@ -31,5 +31,5 @@ calc-ga17k(){
     calc-g imp 17k-a.G
     cp gmat.id 17k-a.G.id
     cat 17k-a.G |
-	$gmt/g2-3c 17k-a.G.id >17k-a.3c
+	$bin/g2-3c 17k-a.G.id >17k-a.3c
 }

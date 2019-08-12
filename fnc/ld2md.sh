@@ -72,7 +72,7 @@ merge-md-ld-then-impute(){
 	tr '\t' '\n' |
 	tail -n+10 >lm.id
     cat ld-md.G |
-	$gmt/g2-3c lm.id >lim.3c
+	$bin/g2-3c lm.id >lim.3c
 
 }
 

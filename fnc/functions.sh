@@ -31,6 +31,6 @@ get-beagle-related(){
 
 calc-g(){
     zcat $1.{1..26}.vcf.gz |
-	$gmt/vcf2g |
-	$gmt/vr1g >$2
+	$bin/vcf2g |
+	$bin/vr1g >$2
 }

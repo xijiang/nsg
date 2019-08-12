@@ -32,5 +32,5 @@ calc-g600k(){
     calc-g imp hd-only.G
     cp gmat.id hd-only.G.id
     cat hd-only.G |
-	$gmt/g2-3c hd-only.G.id >600k.G
+	$bin/g2-3c hd-only.G.id >600k.G
 }

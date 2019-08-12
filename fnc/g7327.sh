@@ -31,5 +31,5 @@ calc-g7327(){
     calc-g imp ld-only.G
     cp gmat.id ld-only.G.id
     cat ld-only.G |
-	$gmt/g2-3c ld-only.G.id >7327.3c
+	$bin/g2-3c ld-only.G.id >7327.3c
 }

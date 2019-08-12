@@ -170,7 +170,7 @@ collect-n-impute-345-ld-genotypes(){
 	    tail -n+10 >tmp.id
 	$bin/subMat $i.G tmp.id 345.id tmp.G
 	cat tmp.G |
-	    $gmt/g2-3c 345.id >$i.3c
+	    $bin/g2-3c 345.id >$i.3c
     done
 
     $base/fnc/qqplotG.jl
@@ -192,7 +192,7 @@ test-345(){
 	    tail -n+10 >tmp.id
 	$bin/subMat $i.G tmp.id 345.id s$i.G
 	cat s$i.G |
-	    $gmt/g2-3c 345.id >$i.3c
+	    $bin/g2-3c 345.id >$i.3c
     done
 }
 
