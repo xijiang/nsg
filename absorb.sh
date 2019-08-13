@@ -6,6 +6,6 @@ prepare-dir
 
 litter-pht			# litter size phenotypes
 
-# time calc-dnt			# for A inverse calculation
+time calc-dnt			# for A inverse calculation
 
 $ssa/absorb.jl
