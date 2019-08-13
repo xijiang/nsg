@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   sort(ped.begin(), ped.end());
 
   MI  dic;
-  int no{0};
+  int no{1};
   dic[0]=0;
   for(auto&[yr,id,pa,ma]:ped){	// code ID, and output coded pedigree [pa ma]xN
     dic[id] = no++;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     cout<<dic[pa]<<'\t'<<dic[ma]<<'\n';
   }
 
-  for(auto&[id, code]:dic) clog<<id<<'\t'<<code<<'\n';
+  for(auto&[id, code]:dic) if(id) clog<<id<<'\t'<<code<<'\n';
   return 0;
 }
 
