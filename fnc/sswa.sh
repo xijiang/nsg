@@ -11,20 +11,6 @@ prepare-dir(){
     cd $work
 }
 
-litter-pht(){
-    # Prepare some phenotypes
-    cd $phenotypes
-    if [ ! -f $work/litter.pht ]; then
-	make
-	cat Litter-AnE.txt |
-	    ./chk-litter |
-	    ./id+a+e >litter.pht
-	
-	mv litter.pht $work
-	cd $work
-    fi
-}
-
 calc-dnt(){
     # used 17 minutes on nmbu.org, single thread
     ln -sf $phenotypes/NKSped2503.txt ped.txt
@@ -37,4 +23,17 @@ calc-dnt(){
     cat sorted.ped | $bin/dnt
 }
 
-
+litter-pht(){
+    # Prepare some phenotypes
+    cd $phenotypes
+    if [ ! -f $work/litter.pht ]; then
+	make
+	cat Litter-AnE.txt |
+	    ./chk-litter |
+	    ./id+a+e |
+	    $bin/match ped.dict >litter.pht
+	
+	mv litter.pht $work
+	cd $work
+    fi
+}
