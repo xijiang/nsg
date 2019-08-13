@@ -18,7 +18,7 @@ litter-pht(){
 	make
 	cat Litter-AnE.txt |
 	    ./chk-litter |
-	    ./id+p >litter.pht
+	    ./id+a+e >litter.pht
 	
 	mv litter.pht $work
 	cd $work
