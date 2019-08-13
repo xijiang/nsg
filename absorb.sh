@@ -4,8 +4,8 @@ source fnc/sswa.sh
 
 prepare-dir
 
-# calc-dnt
+litter-pht			# litter size phenotypes
 
+# time calc-dnt			# for A inverse calculation
 
-
-$base/absorb.jl
+$ssa/absorb.jl

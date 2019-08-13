@@ -7,5 +7,6 @@ genotypes=$dat/genotypes
 phenotypes=$dat/phenotypes
 maps=$dat/maps
 ids=$dat/ids
+ssa=$base/ssa			# single step absorption
 
 ne=100
