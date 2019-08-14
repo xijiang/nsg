@@ -8,5 +8,6 @@ phenotypes=$dat/phenotypes
 maps=$dat/maps
 ids=$dat/ids
 ssa=$base/ssa			# single step absorption
+func=$base/fnc
 
 ne=100
