@@ -11,29 +11,23 @@ prepare-a-working-directory(){
     work=$base/work/l2m.rate
     mkdir -p $work
     cd $work
-    for chr in {1..26}; do
-	ln -sf $base/work/a17k.g/imp.$chr.vcf.gz md.$chr.vcf.gz
-    done
 }
 
 
 make-reference(){
     for chr in {1..26}; do
+	ln -sf $base/work/a17k.g/imp.$chr.vcf.gz md.$chr.vcf.gz
         java -jar $bin/beagle.jar \
              gt=md.$chr.vcf.gz \
              ne=$ne \
              out=ref.$chr
     done
-    # The SNP on the 7k chip
-    cat $maps/7327.map | 
-	gawk '{print $2, $1, $4}' > ld.snp
-
     zcat md.{1..26}.vcf.gz |
 	grep -v \# |
 	gawk '{print $3}' >md.snp
 
-    cat ld.map |
-	gawk '{print $1}' |
+    cat $maps/7327.map | 
+	gawk '{print $2}' |
 	$bin/impsnp super.snp >imputed.snp
 
     zcat md.1.vcf.gz |
@@ -78,6 +72,7 @@ test-lmr(){
 
     make-reference
 
+    determine-sizes
 }
 
 
