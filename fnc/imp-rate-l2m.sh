@@ -27,7 +27,8 @@ make-reference(){
 	gawk '{print $3}' >md.snp
 
     cat $maps/7327.map | 
-	gawk '{print $2}' |
+	gawk '{print $2}' >ld.snp
+    cat ld.snp |
 	$bin/impsnp md.snp >imputed.snp
 
     zcat md.1.vcf.gz |
@@ -59,8 +60,8 @@ sample-n-mask-n-impute(){
 	gawk '{if($1==0) print $2}' >mskt.id
 
     for chr in {26..1}; do
-	cat md.$chr.vcf.gz |
-	    $/bin/maskmd mask.idx ld.snp |
+	zcat md.$chr.vcf.gz |
+	    $bin/maskmd mask.idx ld.snp |
 	    gzip >msk.$chr.vcf.gz
 	java -jar $bin/beagle.jar \
 	     gt=msk.$chr.vcf.gz \
