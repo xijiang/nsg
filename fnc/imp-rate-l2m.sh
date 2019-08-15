@@ -28,7 +28,7 @@ make-reference(){
 
     cat $maps/7327.map | 
 	gawk '{print $2}' |
-	$bin/impsnp super.snp >imputed.snp
+	$bin/impsnp md.snp >imputed.snp
 
     zcat md.1.vcf.gz |
 	head |
@@ -45,6 +45,7 @@ determine-sizes(){
     let ref=nid-msk
 
     rpt=20
+    if [ -f rates.txt ]; then rm rates.txt; fi
 }    
     
 
@@ -54,6 +55,9 @@ sample-n-mask-n-impute(){
     cat tmp |
 	shuf > mask.idx
 
+    paste mask.idx md.id |
+	gawk '{if($1==0) print $2}' >mskt.id
+
     for chr in {26..1}; do
 	cat md.$chr.vcf.gz |
 	    $/bin/maskmd mask.idx ld.snp |
@@ -62,17 +66,23 @@ sample-n-mask-n-impute(){
 	     gt=msk.$chr.vcf.gz \
 	     ne=$ne \
 	     out=imp.$chr
-	$bin/cmpimp <(zcat ref.$chr.vcf.gz) <(zcat imp.$chr.vcf.gz) mask.idx ld.snp
     done
+    zcat imp.{1..26}.vcf.gz |
+        $bin/subvcf mskt.id imputed.snp >imp.gt
+    zcat ref.{1..26}.vcf.gz |
+        $bin/subvcf mskt.id imputed.snp >chp.gt
+
+    paste chp.gt imp.gt |
+        $bin/cor-err >>rates.txt
 }
 
 
 test-lmr(){
     prepare-a-working-directory
 
-    make-reference
-
     determine-sizes
+
+    sample-n-mask-n-impute
 }
 
 
