@@ -204,11 +204,8 @@ imputation-rates(){
     zcat 345.{1..26}.vcf.gz |
 	$bin/subvcf 345.id imputed.snp >chp.gt
 
-    # calculate: 
-    # SNP chr allele-frq gt-error allele-error
-#    paste snp.chr 345.gt imp.gt |
-#	gawk '{print $1, $2, $4, $6}' |
-#	$bin/impErr >err.txt
+    paste chp.gt imp.gt |
+	$bin/cor-err >rate.txt
 }
 
 
@@ -231,5 +228,5 @@ calc-345(){
 
     collect-n-impute-345-ld-genotypes
 
-#   compare-imputed-and-hd-to-find-bad-loci
+    imputation-rates
 }

@@ -45,7 +45,7 @@ else
 	    ;;
 	345)
 	    source fnc/imp-rate-345.sh
-	    test-345
+	    calc-345
 	    ;;
 	l2m|L2m|L2M|l2M)	# impute LD to MD, and calculate a G for all these ID
 	    source fnc/ld2md.sh
