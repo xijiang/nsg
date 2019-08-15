@@ -65,7 +65,7 @@ else
 	    step-impute
 	    ;;
 	debug)
-	    source fnc/imp-rate-lmr.sh 
+	    source fnc/imp-rate-l2m.sh 
 	    test-lmr
 	    ;;
     esac

@@ -10,7 +10,7 @@ prepare-a-working-directory(){
 
     work=$base/work/l2m.rate
     mkdir -p $work
-    cd work
+    cd $work
     for chr in {1..26}; do
 	ln -sf $base/work/a17k.g/imp.$chr.vcf.gz md.$chr.vcf.gz
     done
@@ -76,7 +76,7 @@ sample-n-mask-n-impute(){
 test-lmr(){
     prepare-a-working-directory
 
-#    make-reference
+    make-reference
 
 }
 
