@@ -18,6 +18,32 @@ prepare-a-working-directory(){
 }
 
 
+make-reference(){
+    for chr in {1..26}; do
+        java -jar $bin/beagle.jar \
+             gt=md.$chr.vcf.gz \
+             ne=$ne \
+             out=ref.$chr
+    done
+    cat $maps/7327.map | 
+	gawk '{print $2, $1, $4}' > ld.map
+
+    zcat md.{1..26}.vcf.gz |
+	grep -v \# |
+	gawk '{print $3}' >md.snp
+
+    cat ld.map |
+	gawk '{print $1}' |
+	$bin/impsnp super.snp >imputed.snp
+
+    zcat md.1.vcf.gz |
+	head |
+	tail -1 |
+	tr '\t' '\n' |
+	tail -n+10 >md.id
+}
+
+
 determine-sizes(){
     nid=`zcat md.1.vcf.gz | head | tail -1 | tr '\t' '\n' | wc | gawk '{print $1}'`
     let nid=nid-9
@@ -50,14 +76,15 @@ sample-n-mask-n-impute(){
 test-lmr(){
     prepare-a-working-directory
 
-    determine-sizes
+    make-reference
 
-    sample-n-mask-n-impute
 }
 
 
 lm-rate(){
     prepare-a-working-directory
+
+    make-reference
 
     determine-sizes
 
