@@ -29,5 +29,5 @@ plot-freq(){
 
     $base/fnc/frq.jl
 
-    convert frq.ps frq.eps
+    pdf2ps -eps frq.pdf
 }

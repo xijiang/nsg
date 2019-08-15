@@ -174,26 +174,41 @@ collect-n-impute-345-ld-genotypes(){
     done
 
     $base/fnc/qqplotG.jl
-    convert qqplot.ps qqplot.eps
+    pdftops -eps qqp.pdf
+}
+
+
+imputation-rates(){
+    # give the percentage of wrongly imputed genotypes of who were imputed
+    # also calculate the correlation of the imputed and original genotypes.
+    # Files:
+    #   - imp
+    #   - 345
+    for chr in {1..26}; do
+	zcat 345.$chr.vcf.gz |
+	    tail -n+11 |
+	    gawk '{print $3}' >super.snp
+    done
+    cat ld.map |
+	gawk '{print $1}' |
+	$bin/impsnp super.snp >imputed.snp
+
+    zcat imp.{1..26}.vcf.gz |
+	$bin/subvcf 345.id imputed.snp >imp.gt
+    zcat 345.{1..26}.vcf.gz |
+	$bin/subvcf 345.id imputed.snp >chp.gt
+
+    # calculate: 
+    # SNP chr allele-frq gt-error allele-error
+    paste snp.chr 345.gt imp.gt |
+	gawk '{print $1, $2, $4, $6}' |
+	$bin/impErr >err.txt
 }
 
 
 test-345(){
     prepare-a-working-directory
-    
-    cat ld.id |
-	gawk '{print $2}' >345.id
-    for i in 345 ild imp; do	# HD, LD and imputed
-	calc-g $i $i.G
-	zcat $i.1.vcf.gz |
-	    head |
-	    tail -1 |
-	    tr '\t' '\n' |
-	    tail -n+10 >tmp.id
-	$bin/subMat $i.G tmp.id 345.id s$i.G
-	cat s$i.G |
-	    $bin/g2-3c 345.id >$i.3c
-    done
+    imputation-rates
 }
 
 
