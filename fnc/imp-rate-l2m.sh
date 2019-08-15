@@ -11,27 +11,28 @@ prepare-a-working-directory(){
     work=$base/work/l2m.rate
     mkdir -p $work
     cd work
-
-    for chr in {1..26}; do
-	ln -sf $base/work/a17k.g/tmp.$chr.vcf.gz  md.$chr.vcf.gz
-	ln -sf $base/work/a17k.g/imp.$chr.vcf.gz ref.$chr.vcf.gz
-    done
-}    
-
-
-sample-n-mask-n-impute(){
-    # Create mask list
-    nref=`zcat md.1.vcf.gz | head | tail -1 | tr '\t' '\n' | wc | gawk '{print $1}'`
-    nmsk=500
-    let nref=nref-nmsk-9
-    yes 0 | head -$nmsk >tmp
-    yes 1 | head -$nref>>tmp
-    cat tmp | shuf >mask.idx
-    rm tmp
-
+    ln -sf $base/work/a17k.g/md.{1..26}.vcf.gz .
     # The SNP on the 7k chip
     cat $maps/7327.map |
 	gawk '{print $2}' >ld.snp
+}
+
+
+determine-sizes(){
+    nid=`zcat md.1.vcf.gz | head | tail -1 | tr '\t' '\n' | wc | gawk '{print $1}'`
+    let nid=nid-9
+    msk=500
+    let ref=nid-msk
+
+    rpt=20
+}    
+    
+
+sample-n-mask-n-impute(){
+    yes 0 | head -$msk > tmp
+    yes 1 | head -$ref >>tmp
+    cat tmp |
+	shuf > mask.idx
 
     for chr in {26..1}; do
 	cat md.$chr.vcf.gz |
@@ -46,11 +47,21 @@ sample-n-mask-n-impute(){
 }
 
 
+test-lmr(){
+    prepare-a-working-directory
+
+    determine-sizes
+
+    sample-n-mask-n-impute
+}
 
 
 lm-rate(){
     prepare-a-working-directory
-    
-    sample-n-mask-n-impute
 
+    determine-sizes
+
+    for i in `seq $rpt`; do
+	sample-n-mask-n-impute
+    done
 }
