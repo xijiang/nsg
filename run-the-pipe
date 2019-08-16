@@ -53,7 +53,7 @@ else
 	    ld2md
 	    ;;
 	lmr|LMR|Lmr)
-	    srouce fnc/imp-rate-l2m.sh
+	    source fnc/imp-rate-l2m.sh
 	    lm-rate
 	    ;;
 	IMP|imp|Imp)
