@@ -19,17 +19,18 @@ int main(int argc, char *argv[])
     cerr<<"zcat chr.vcf.gz | " <<argv[0]<<" id-bool snp-list\n";
     return 1;
   }
-  vector<int> mid;
+  vector<int> mid;		// ID to be masked 0 to mask, 1 not to mask
   ifstream fin(argv[1]);
   for(int x; fin>>x; mid.push_back(x));
   fin.close();
+
   fin.open(argv[2]);
   set<string> ld;
   for(string snp; fin>>snp; ld.insert(snp));
 
   for(string line; getline(cin, line);){
     cout<<line<<'\n';
-    if(line[1]!='#') break;
+    if(line[1]!='#') break;	// Break @ the ID line
   }
 
   for(string line; getline(cin, line);){
@@ -44,12 +45,12 @@ int main(int argc, char *argv[])
       for(auto i=0; i<6; ++i){
 	ss>>tt;
 	cout<<'\t'<<tt;
-	for(auto&x:mid){
-	  ss>>tt;
-	  x ? cout<<'\t'<<tt : cout<<"\t./.";
-	}
-	cout<<'\n';
       }
+      for(auto&x:mid){
+	ss>>tt;
+	x ? cout<<'\t'<<tt : cout<<"\t./.";
+      }
+      cout<<'\n';
     }
   }
     
