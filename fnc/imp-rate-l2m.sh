@@ -9,20 +9,17 @@ prepare-a-working-directory(){
     fi
 
     work=$base/work/l2m.rate
-    mkdir -p $work
+    mkdir -p $work/{pre,tst}
     cd $work
 }
 
 
 make-reference(){
     for chr in {1..26}; do
-	ln -sf $base/work/a17k.g/imp.$chr.vcf.gz md.$chr.vcf.gz
-        java -jar $bin/beagle.jar \
-             gt=md.$chr.vcf.gz \
-             ne=$ne \
-             out=ref.$chr
+	ln -sf $base/work/a17k.g/tmp.$chr.vcf.gz  pre/md.$chr.vcf.gz
+	ln -sf $base/work/a17k.g/imp.$chr.vcf.gz pre/ref.$chr.vcf.gz
     done
-    zcat md.{1..26}.vcf.gz |
+    zcat pre/md.{1..26}.vcf.gz |
 	grep -v \# |
 	gawk '{print $3}' >md.snp
 
@@ -31,7 +28,7 @@ make-reference(){
     cat ld.snp |
 	$bin/impsnp md.snp >imputed.snp
 
-    zcat md.1.vcf.gz |
+    zcat pre/ref.1.vcf.gz |
 	head |
 	tail -1 |
 	tr '\t' '\n' |
@@ -40,7 +37,7 @@ make-reference(){
 
 
 determine-sizes(){
-    nid=`zcat md.1.vcf.gz | head | tail -1 | tr '\t' '\n' | wc | gawk '{print $1}'`
+    nid=`zcat pre/md.1.vcf.gz | head | tail -1 | tr '\t' '\n' | wc | gawk '{print $1}'`
     let nid=nid-9
     msk=500
     let ref=nid-msk
@@ -60,17 +57,17 @@ sample-n-mask-n-impute(){
 	gawk '{if($1==0) print $2}' >mskt.id
 
     for chr in {26..1}; do
-	zcat md.$chr.vcf.gz |
+	zcat pre/md.$chr.vcf.gz |
 	    $bin/maskmd mask.idx ld.snp |
-	    gzip >msk.$chr.vcf.gz
+	    gzip >tst/msk.$chr.vcf.gz
 	java -jar $bin/beagle.jar \
-	     gt=msk.$chr.vcf.gz \
+	     gt=tst/msk.$chr.vcf.gz \
 	     ne=$ne \
-	     out=imp.$chr
+	     out=tst/imp.$chr
     done
-    zcat imp.{1..26}.vcf.gz |
+    zcat tst/imp.{1..26}.vcf.gz |
         $bin/subvcf mskt.id imputed.snp >imp.gt
-    zcat ref.{1..26}.vcf.gz |
+    zcat pre/ref.{1..26}.vcf.gz |
         $bin/subvcf mskt.id imputed.snp >chp.gt
 
     paste chp.gt imp.gt |
@@ -80,6 +77,8 @@ sample-n-mask-n-impute(){
 
 test-lmr(){
     prepare-a-working-directory
+
+    make-reference
 
     determine-sizes
 

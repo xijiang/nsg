@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
       xy+=x*y;
     }
   }
+  cout.precision(12);
   cout<<"    Genotype error rate: "<<er/n<<'\n';
   double cor = (n*xy-sx*sy) / sqrt((n*x2-sx*sx)*(n*y2-sy*sy));
   cout<<"Correlation coefficient: "<<cor<<'\n';
