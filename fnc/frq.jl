@@ -13,7 +13,7 @@ h1 = histogram(ld,
                title="LD",
                color=1,
                dpi=300,
-               ylabel="Distribution of allele frequencies"
+               ylabel="Density of allele frequencies"
                )
 #h2 = histogram(md, bins=50, normalize=true, title="MD", color=2, xlabel="Allele frequencies")
 h3 = histogram(hd,
@@ -21,7 +21,8 @@ h3 = histogram(hd,
                normalize=true,
                title="HD",
                color=3,
-               dpi=300
+               dpi=300,
+               xlabel="Allele frequencies of the SNP markers"
                )
 hst = plot(h1, h3, layout=(1,2), size=(960,480), left_margin=10px, bottom_margin=15px, leg=false)
 

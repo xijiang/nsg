@@ -171,6 +171,10 @@ collect-n-impute-345-ld-genotypes(){
 	$bin/subMat $i.G tmp.id 345.id tmp.G
 	cat tmp.G |
 	    $bin/g2-3c 345.id >$i.3c
+	cat $i.3c |
+	    gawk '{if($1==$2) print $3}' >$i.diag
+	cat $i.3c |
+	    gawk '{if($1!=$2) print $3}' >$i.offd
     done
 
     $base/fnc/qqplotG.jl
