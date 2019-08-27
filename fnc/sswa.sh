@@ -58,12 +58,7 @@ G-n-genotypes(){
     
     # -- genotypes zt and zv
     zcat $dpth/imp/{1..26}.vcf.gz |
-	groupgt Zt.id Zv.id Zt.gt Zv.gt
-
-    # -- genotypes of validation set
-    zcat $dpth/imp/{1..26}.vcf.gz |
-	
-    # prepare genotypes in the validation set
+	$bin/groupgt Zt.id Zv.id Zt.gt Zv.gt
 }
 
 single-step-with-absorption(){

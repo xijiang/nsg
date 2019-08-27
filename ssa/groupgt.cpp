@@ -45,14 +45,18 @@ int main(int argc, char *argv[])
       break;
     }
 
-  string lc(nid, '0');
+  // Initialize the two genotype containers
+  for(const auto&[ix, id]:it) zt[ix]="";
+  for(const auto&[id, ix]:vi) zv[id]="";
+  
+  string lc(nid, 'x');
   for(string line; getline(cin, line);){
     if(line[0]=='#') continue;
     stringstream ss(line);
     string tmp;
     for(auto i{0}; i<9; ++i) ss>>tmp;
     int ix{0};
-    for(string aa; ss>>aa; ++ix) lc[ix]+=aa[0]-'0'+aa[2];
+    for(string aa; ss>>aa; ++ix) lc[ix]=aa[0]-'0'+aa[2];
     for(auto&[id, gt]:zt) gt += lc[ii[id]];
     for(auto&[id, gt]:zv) gt += lc[vi[id]];
   }
