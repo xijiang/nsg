@@ -59,6 +59,8 @@ G-n-genotypes(){
     # -- genotypes zt and zv
     zcat $dpth/imp/{1..26}.vcf.gz |
 	$bin/groupgt Zt.id Zv.id Zt.gt Zv.gt
+
+    gawk '{for (i=2; i<NF; ++i) print $i}' Zt.gt >z4jl
 }
 
 single-step-with-absorption(){

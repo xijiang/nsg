@@ -34,17 +34,22 @@ int main(int argc, char *argv[])
 
   // ID columns in the vcf file
   int nid{0};
+  clog<<vi.size()<<endl;
   for(string line; getline(cin, line);)
     if(line[1]!='#'){
       stringstream ss(line);
       string tmp;
       for(auto i{0}; i<9; ++i) ss>>tmp;
-      for(int id; ss>>id; ++nid)
-	if(vi.find(id) != ti.end()) vi[id]=nid;
+      for(int id; ss>>id; ++nid){
+	if(vi.find(id) != vi.end()) vi[id]=nid;
 	else ii[ti[id]] = nid;
+      }
       break;
     }
-
+  clog<<vi.size()<<endl;
+  clog<<ii.size()<<endl;
+  for(auto&[i, j]:ii) clog<<i<<' '<<j<<'\t';
+  
   // Initialize the two genotype containers
   for(const auto&[ix, id]:it) zt[ix]="";
   for(const auto&[id, ix]:vi) zv[id]="";
@@ -60,7 +65,7 @@ int main(int argc, char *argv[])
     for(auto&[id, gt]:zt) gt += lc[ii[id]];
     for(auto&[id, gt]:zv) gt += lc[vi[id]];
   }
-
+			 
   // output the results
   ofstream foo;
   foo.open(argv[3]);
