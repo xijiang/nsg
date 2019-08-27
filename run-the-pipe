@@ -11,6 +11,7 @@ if [ $# != 1 ]; then
     echo -e "\t"345:  using 345 HD and LD infor to test error rate
     echo -e "\t"lmr:  maske 500 MD to LD, and impute them back.  To test this imputation.
     echo -e "\t"l2m:  impute 7k to 17k, and calculate a G matrix
+    echo -e "\t"ssa:  the single step with absorption procedure
     echo -e "\t"gbs:  calculate NE with GBS data \(in progress\)
     echo -e "\t"IMP:  construct a G matrix with imputation on 4204 ID
     echo -e "\t"step: test imputation rate of 8k, 18k, 50k and HD panels
@@ -56,6 +57,9 @@ else
 	    source fnc/imp-rate-l2m.sh
 	    lm-rate
 	    ;;
+	ssa|SSA|Ssa)
+	    source fnc/sswa.sh
+	    single-step-with-absorption
 	IMP|imp|Imp)
 	    source fnc/hdimp.sh
 	    calc-hdimp
@@ -65,8 +69,8 @@ else
 	    step-impute
 	    ;;
 	debug)
-	    source fnc/imp-rate-l2m.sh 
-	    test-lmr
+	    source fnc/sswa.sh
+	    test-ss
 	    ;;
     esac
 fi

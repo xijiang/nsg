@@ -1,9 +1,6 @@
 # Single step with absorption
 prepare-dir(){
     echo Prepare a working directory
-    cd ssa/
-    make
-    make mv
 
     work=$base/work/absorb
     mkdir -p $work
@@ -38,7 +35,11 @@ litter-pht(){
     cd $work
 }
 
-g-mat(){
+G-n-genotypes(){
+    # calculate a G matrix in the training set
+    # -- find the ID in the training set
+    # -- then get the sub G matrix from G calculated before.
+    # prepare genotypes in the validation set
     dpth=$base/work/ld2md	# dependent path
     idlst=lm.id
     gmat=ld-md.G
@@ -56,4 +57,19 @@ g-mat(){
     sort ori.id > g.id
 
     $bin/subMat $dpth/$gmat ori.id g.id g.G
+}
+
+single-step-with-absorption(){
+    prepare-dir
+
+    time calc-dnt			# for A inverse calculation
+
+    litter-pht			# litter size phenotypes
+
+    $ssa/absorb.jl
+}
+
+test-ss(){
+    prepare-dir
+    
 }

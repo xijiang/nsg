@@ -24,8 +24,13 @@ make
 make mv
 cd ..
 
-echo Check if Beagle 5 is ready
+echo Binaries for single step data
+cd ssa/
+make
+make mv
+cd ..
 
+echo Check if Beagle 5 is ready
 if [ ! -f bin/beable2vcf.jar ]; then
     get-beagle-related
 fi
