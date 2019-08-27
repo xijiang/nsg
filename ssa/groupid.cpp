@@ -11,11 +11,13 @@ int main(int argc, char *argv[])
 {
   map<int, int> code;
   ifstream fin(argv[1]);
-  for(int id, tt; fin>>id>>tt; code[id]=tt);
+  ofstream ftr(argv[2]), fvd(argv[3]);
+  
+  for(int id, v; fin>>id>>v; code[id]=v);
 
   for(int id; cin>>id;)
-    if(code.find(id)!=code.end()) cout<<code[id]<<'\n';
-    else clog<<id<<" not found in the dictionary\n";
+    if(code.find(id)!=code.end()) ftr<<id<<'\t'<<code[id]<<'\n';
+    else fvd<<id<<'\n';		// for sub- genotype set later
     
   return 0;
 }

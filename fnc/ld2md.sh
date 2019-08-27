@@ -68,6 +68,7 @@ merge-md-ld-then-impute(){
     done
 
     cd ..
+    echo Calculate the G matrix
     zcat imp/{1..26}.vcf.gz|
 	$bin/vcf2g |
 	$bin/vr1g >ld-md.G
@@ -77,7 +78,8 @@ merge-md-ld-then-impute(){
 	tail -1 |
 	tr '\t' '\n' |
 	tail -n+10 >lm.id
-    
+
+    echo Transform G-matrix to 3-column format
     cat ld-md.G |
 	$bin/g2-3c lm.id >lim.3c
 }

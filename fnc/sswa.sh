@@ -37,26 +37,33 @@ litter-pht(){
 
 G-n-genotypes(){
     # calculate a G matrix in the training set
-    # -- find the ID in the training set
-    # -- then get the sub G matrix from G calculated before.
-    # prepare genotypes in the validation set
     dpth=$base/work/ld2md	# dependent path
-    idlst=lm.id
-    gmat=ld-md.G
-    
     if [ ! -d $dpth ]; then
 	source $func/ld2md.sh
 	ld2md
     fi
-    
-    cd $work
-    #translate ID
+    work=$base/work/absorb	# write back current work directory
+
+    # -- find the ID in the training set
+    # -- note:
+    # ---- training set include the animal ID and coded ID
+    # ---- validation included only the animal ID
+    idlst=lm.id
     cat $dpth/$idlst |
-	$bin/transid ped.dict >ori.id
+	$bin/groupid ped.dict training.id Zv.id
 
-    sort ori.id > g.id
+    sort -nk2 training.id >tmp
+    gawk '{print $1}' tmp >Zt.id
+    gawk '{print $2}' tmp >idx.id
+    
+    # -- genotypes zt and zv
+    zcat $dpth/imp/{1..26}.vcf.gz |
+	groupgt Zt.id Zv.id Zt.gt Zv.gt
 
-    $bin/subMat $dpth/$gmat ori.id g.id g.G
+    # -- genotypes of validation set
+    zcat $dpth/imp/{1..26}.vcf.gz |
+	
+    # prepare genotypes in the validation set
 }
 
 single-step-with-absorption(){
@@ -70,6 +77,11 @@ single-step-with-absorption(){
 }
 
 test-ss(){
+    cd ssa
+    make
+    make mv
+
     prepare-dir
-    
+
+    G-n-genotypes
 }

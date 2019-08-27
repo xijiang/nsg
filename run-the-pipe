@@ -60,6 +60,7 @@ else
 	ssa|SSA|Ssa)
 	    source fnc/sswa.sh
 	    single-step-with-absorption
+	    ;;
 	IMP|imp|Imp)
 	    source fnc/hdimp.sh
 	    calc-hdimp

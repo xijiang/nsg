@@ -1,6 +1,6 @@
 CXXFLAGS = -O2 -Wall -std=c++17
 
-target=dnt sortped match transid
+target=dnt sortped match groupid groupgt
 
 all:    ${target}
 
