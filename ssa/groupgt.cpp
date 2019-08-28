@@ -34,7 +34,6 @@ int main(int argc, char *argv[])
 
   // ID columns in the vcf file
   int nid{0};
-  clog<<vi.size()<<endl;
   for(string line; getline(cin, line);)
     if(line[1]!='#'){
       stringstream ss(line);
@@ -46,9 +45,6 @@ int main(int argc, char *argv[])
       }
       break;
     }
-  clog<<vi.size()<<endl;
-  clog<<ii.size()<<endl;
-  for(auto&[i, j]:ii) clog<<i<<' '<<j<<'\t';
   
   // Initialize the two genotype containers
   for(const auto&[ix, id]:it) zt[ix]="";
