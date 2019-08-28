@@ -44,6 +44,15 @@ groups-n-genotypes(){
     work=$base/work/absorb	# write back current work directory
     cd $work
 
+    echo group genotypes into training and validation sets
+    zcat $dpth/imp/{1..26}.vcf.gz |
+	$bin/groupgt ped.dict	# --> 2.gt, for training;  3.gt, validation
+
+    gawk '{sub($1 FS, "")} {print $0}' 2.gt   >training.zmt
+    gawk '{print $1}'                  2.gt   >2.id
+    gawk '{sub($1 FS, "")} {print $0}' 3.gt >validation.zmt
+
+    # construct X1, ix 0, 1, 2 here
     echo group the ID into 0, 1, 2 and 3, and put them in order
     $bin/id0123 ped.dict <(gawk '{print $1}' litter.pht) $dpth/lm.id
     sort -n 2.id >tmp.id
@@ -51,12 +60,6 @@ groups-n-genotypes(){
     sort -n 3.id >tmp.id
     mv tmp.id 3.id
 
-    echo group genotypes according ID group 2 and 3
-    zcat $dpth/imp/{1..26}.vcf.gz |
-	$bin/groupgt ped.dict
-
-    gawk '{sub($1 FS, "")} {print $0}' 2.gt   >training.zmt
-    gawk '{sub($1 FS, "")} {print $0}' 3.gt >validation.zmt
 }
 
 calc-gebv(){
