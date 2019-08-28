@@ -16,7 +16,8 @@ calc-dnt(){
 	$bin/sortped >sorted.ped 2>ped.dict
 
     echo Prepare for Julia matrix A inverse scripts
-    cat sorted.ped | $bin/dnt
+    cat sorted.ped |
+	$bin/dnt
 }
 
 litter-pht(){
@@ -33,7 +34,7 @@ litter-pht(){
     fi
 }
 
-G-n-genotypes(){
+groups-n-genotypes(){
     # calculate a G matrix in the training set
     dpth=$base/work/ld2md	# dependent path
     if [ ! -d $dpth ]; then
@@ -44,38 +45,36 @@ G-n-genotypes(){
     cd $work
 
     echo group the ID into 0, 1, 2 and 3, and put them in order
-    $/bin/id0123 ped.dict <(gawk '{print $1}' litter.pht) $dpth/lm.id
+    $bin/id0123 ped.dict <(gawk '{print $1}' litter.pht) $dpth/lm.id
     sort -n 2.id >tmp.id
     mv tmp.id 2.id
     sort -n 3.id >tmp.id
     mv tmp.id 3.id
 
-    echo group genotypes according ID group 2 & 3
+    echo group genotypes according ID group 2 and 3
     zcat $dpth/imp/{1..26}.vcf.gz |
-	$bin/groupgt 2.id 3.id 2.gt 3.gt
+	$bin/groupgt ped.dict
 
-    gawk '{sub($1 FS, "")} {print $0}' Zt.gt >training.zmat
-    gawk '{sub($1 FS, "")} {print $0}' Zv.gt >validation.zmat
+    gawk '{sub($1 FS, "")} {print $0}' 2.gt   >training.zmt
+    gawk '{sub($1 FS, "")} {print $0}' 3.gt >validation.zmt
+}
 
-    #$ssa/absorb.jl
+calc-gebv(){
+    echo calculate GEBV
 }
 
 single-step-with-absorption(){
     prepare-dir
 
-    time calc-dnt			# for A inverse calculation
+    time calc-dnt		# for A inverse calculation
 
     litter-pht			# litter size phenotypes
 
-    $ssa/absorb.jl
+    groups-n-genotypes
+
+    #$ssa/absorb.jl		# output b-hat
 }
 
 test-ss(){
-    cd ssa
-    make
-    make mv
-
-    prepare-dir
-
-    G-n-genotypes
+    echo use option ssa
 }
