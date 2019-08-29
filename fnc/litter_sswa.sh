@@ -2,7 +2,7 @@
 prepare-dir(){
     echo Prepare a working directory
 
-    work=$base/work/absorb
+    work=$base/work/litter
     mkdir -p $work
     cd $work
 }
@@ -40,7 +40,7 @@ groups-n-genotypes(){
 	source $func/ld2md.sh
 	ld2md
     fi
-    work=$base/work/absorb	# write back current work directory
+    work=$base/work/litter	# write back current work directory
     cd $work
 
     echo group genotypes into training and validation sets
@@ -50,11 +50,11 @@ groups-n-genotypes(){
     gawk '{sub($1 FS, "")} {print $0}' t.gt   >training.zmt
     gawk '{print $1}'                  t.gt   >g.id
     gawk '{sub($1 FS, "")} {print $0}' v.gt >validation.zmt
-    gawk '{print $1}'             litter.pht  >y.id # ID with phenotypes
 
     # construct X1, ix 0, 1, 2 here
     echo group the ID into 0, 1, 2 and 3, and output sparse (3-col) design matrix X1
-    $bin/id0123 `wc ped.dict|gawk '{print $1}'` y.id g.id # -> 0, 1, 2, 3.id
+    # -> 0, 1, 2, 3.id; 1, 2.y
+    $bin/id0123 `wc ped.dict | gawk '{print $1}'` `gawk '{print $1, $2+$3}' litter.pht` g.id
 }
 
 calc-gebv(){
