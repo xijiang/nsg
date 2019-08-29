@@ -52,9 +52,8 @@ groups-n-genotypes(){
     gawk '{sub($1 FS, "")} {print $0}' v.gt >validation.zmt
 
     # construct X1, ix 0, 1, 2 here
-    echo group the ID into 0, 1, 2 and 3, and output sparse (3-col) design matrix X1
-    # -> 0, 1, 2, 3.id; 1, 2.y
-    $bin/id0123 `wc ped.dict | gawk '{print $1}'` `gawk '{print $1, $2+$3}' litter.pht` g.id
+    echo group the ID into 0, 1, 2 and 3.id, and 1, 2.y
+    $bin/id0123 `wc ped.dict | gawk '{print $1}'` <(gawk '{print $1, $2+$3}' litter.pht) g.id
 }
 
 calc-gebv(){

@@ -18,16 +18,23 @@ h2 = 0.15                       # Or, read from command line later
 
 @time begin
     println("Dealing with data groups")
+    # ID list
     ix0 = readdlm("0.id", Int)[:, 1]
     ix1 = readdlm("1.id", Int)[:, 1]
     ix2 = readdlm("2.id", Int)[:, 1]
-    idx = [ix0; ix1; ix2]
+    ix3 = readdlm("3.id", Int)[:, 1]
+    idx = [ix0; ix1; ix2; ix3]
+    # Training genotypes
     Z   = readdlm("training.zmt")
     n0  = length(ix0)
     n1  = length(ix1)
-    nl  = n0 + n1               # number of non genotyped animals
     n2  = length(ix2)
-    nt  = n0 + n1 + n2
+    n3  = length(ix3)
+    nl  = n0 + n1               # number of non genotyped animals
+    X1  = sparse(1:n1, n0+1:nl, ones(n1))
+    nr  = n2 + n3
+    X2  = sparse(1:n3, n2+1:nr, ones(n3))
+    nt  = n0 + n1 + n2 + n3
 end
 
 @time begin
@@ -45,7 +52,10 @@ end
     A11 = Ai[1:nl, 1:nl]
     A12 = Ai[1:nl, nl+1:nt]
     β   = A11\Matrix(-A12)      # around 9 min on nmbu.org
-    X1  = sparse(1:n1, n0+1:nl, ones(n1))
     P   = X1'X1
-    
+    Q   = X2'X2
 end
+
+@time begin                     # RHS and LHS
+    rhs = Z'(β'X1'y1 - β'P(P
+    lhs = Z'(β'P*β - β'P(P+λ.*A11
