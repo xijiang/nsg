@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 			 
   // output the results
   ofstream foo;
-  foo.open("2.gt");
+  foo.open("t.gt");
   for(const auto&[ix, gt]:zt){
     foo<<ix;
     for(const auto&c:gt) foo<<' '<<c;
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   }
   foo.close();
 
-  foo.open("3.gt");
+  foo.open("v.gt");
   for(const auto&[id, gt]:zv){
     foo<<id;
     for(const auto&c:gt) foo<<' '<<c;

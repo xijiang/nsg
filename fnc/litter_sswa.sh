@@ -10,9 +10,7 @@ prepare-dir(){
 calc-dnt(){
     cd $work
     # used 3 minutes on nmbu.org, single thread
-    ln -sf $phenotypes/NKSped2503.txt ped.txt
-
-    cat ped.txt |
+    cat $phenotypes/NKSped2503.txt |
 	$bin/sortped >sorted.ped 2>ped.dict
 
     echo Prepare for Julia matrix A inverse scripts
@@ -30,6 +28,7 @@ litter-pht(){
 	    ./id+a+e |
 	    $bin/match $work/ped.dict |
 	    sort -nk1 >$work/litter.pht
+	make clean
 	cd $work
     fi
 }
@@ -46,20 +45,16 @@ groups-n-genotypes(){
 
     echo group genotypes into training and validation sets
     zcat $dpth/imp/{1..26}.vcf.gz |
-	$bin/groupgt ped.dict	# --> 2.gt, for training;  3.gt, validation
+	$bin/groupgt ped.dict	# --> t.gt, for training;  v.gt, validation
 
-    gawk '{sub($1 FS, "")} {print $0}' 2.gt   >training.zmt
-    gawk '{print $1}'                  2.gt   >2.id
-    gawk '{sub($1 FS, "")} {print $0}' 3.gt >validation.zmt
+    gawk '{sub($1 FS, "")} {print $0}' t.gt   >training.zmt
+    gawk '{print $1}'                  t.gt   >g.id
+    gawk '{sub($1 FS, "")} {print $0}' v.gt >validation.zmt
+    gawk '{print $1}'             litter.pht  >y.id # ID with phenotypes
 
     # construct X1, ix 0, 1, 2 here
-    echo group the ID into 0, 1, 2 and 3, and put them in order
-    $bin/id0123 ped.dict <(gawk '{print $1}' litter.pht) $dpth/lm.id
-    sort -n 2.id >tmp.id
-    mv tmp.id 2.id
-    sort -n 3.id >tmp.id
-    mv tmp.id 3.id
-
+    echo group the ID into 0, 1, 2 and 3, and output sparse (3-col) design matrix X1
+    $bin/id0123 `wc ped.dict|gawk '{print $1}'` y.id g.id # -> 0, 1, 2, 3.id
 }
 
 calc-gebv(){
@@ -75,7 +70,7 @@ single-step-with-absorption(){
 
     groups-n-genotypes
 
-    #$ssa/absorb.jl		# output b-hat
+    calc-gebv
 }
 
 test-ss(){
