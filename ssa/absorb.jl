@@ -24,8 +24,7 @@ h2 = 0.15                       # Or, read from command line later
     ix2 = readdlm("2.id", Int)[:, 1]
     ix3 = readdlm("3.id", Int)[:, 1]
     idx = [ix0; ix1; ix2; ix3]
-    # Training genotypes
-    Z   = readdlm("training.zmt")
+
     n0  = length(ix0)
     n1  = length(ix1)
     n2  = length(ix2)
@@ -35,6 +34,13 @@ h2 = 0.15                       # Or, read from command line later
     nr  = n2 + n3
     X2  = sparse(1:n3, n2+1:nr, ones(n3))
     nt  = n0 + n1 + n2 + n3
+    # Read genotypes and standardize them
+    Zt  = readdlm("training.zmt")
+    Zv  = readdlm("validation.zmt");
+    tp  = mean([Zt; Zv], dims=1) # = 2p already
+    tmp = sqrt.(tp.*(1 .- .5tp)) # sqrt(2pq)
+    Zt  = (Zt.-tp)./tmp
+    Zv  = (Zv.-tp)./tmp
 end
 
 @time begin
@@ -57,5 +63,7 @@ end
 end
 
 @time begin                     # RHS and LHS
+    tmp = P*(P+A11.*λ)
+    C   = β'tmp                 # The coefficient matrix for Pβ, and X_1'y
     rhs = Z'(β'X1'y1 - β'P(P
     lhs = Z'(β'P*β - β'P(P+λ.*A11
