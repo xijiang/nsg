@@ -1,5 +1,6 @@
 #!/usr/bin/env julia
-using DelimitedFiles, SparseArrays, LinearAlgebra, Statistics
+using DelimitedFiles, SparseArrays, LinearAlgebra, Statistics, Serialization
+BLAS.set_num_threads(18)
 
 # dtpth = "./"
 # if length(ARGS) == 1
@@ -15,6 +16,7 @@ h2 = 0.15                       # Or, read from command line later
 # -- 1: pedigree, phenotypes.  Information that single-step wants to utilize.
 # -- 2: pedigree, genotypes, phenotypes.  Or, the training
 # -- 3: pedigree, genotypes.  Or, the validation set
+# Above are put into idx, to re-order A inverse matrix.
 
 @time begin
     println("Dealing with data groups")
@@ -41,7 +43,11 @@ h2 = 0.15                       # Or, read from command line later
     tmp = sqrt.(tp.*(1 .- .5tp)) # sqrt(2pq)
     Zt  = (Zt.-tp)./tmp
     Zv  = (Zv.-tp)./tmp
-end
+
+    # phenotypes
+    y1 = readdlm("1.y")[:, 1]
+    y2 = readdlm("2.y")[:, 1]
+end;                            # note the semicolon to supress middle results
 
 @time begin
     println("Calculate the sparse matrix of A inverse")
@@ -51,7 +57,7 @@ end
     
     tmp = T'Diagonal(D)T
     Ai  = tmp[idx, idx]
-end
+end;
 
 @time begin
     println("Calculate β, etc")
@@ -60,10 +66,33 @@ end
     β   = A11\Matrix(-A12)      # around 9 min on nmbu.org
     P   = X1'X1
     Q   = X2'X2
-end
+end;
+
+@time begin                     # around R^-1 
+    C   = P + A11 .* λ
+    r1  = P*β                   # r1 and r2 are the right hand side of C
+    r2  = X1'y1                 #   in both LHS and RHS in the big equations
+    sol = C\[r1 r2]
+end;
 
 @time begin                     # RHS and LHS
-    tmp = P*(P+A11.*λ)
-    C   = β'tmp                 # The coefficient matrix for Pβ, and X_1'y
-    rhs = Z'(β'X1'y1 - β'P(P
-    lhs = Z'(β'P*β - β'P(P+λ.*A11
+    tmp = β - sol[:, 1:nr]
+    tmp = P*tmp
+    tmp = β'tmp
+    tmp = tmp + Q
+    tmp = Zt'tmp
+    tmp = tmp*Zt
+    lhs = tmp + λ.*I
+    
+    tmp = X1'y1 - P*sol[:, nr+1]
+    tmp = β'tmp + X2'y2
+    rhs = Zt'tmp
+end;                            # key point here is to write one matrix operation a time
+
+@time begin                     # bhat and GEBV
+    bhat = lhs\rhs
+    gbvt = Zt*bhat
+    gbvv = Zv*bhat
+    writedlm("training.ebv", gbvt)
+    writedlm("validation.ebv", gbvv)
+end;
