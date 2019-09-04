@@ -2,6 +2,12 @@
 using DelimitedFiles, SparseArrays, LinearAlgebra, Statistics, Serialization
 BLAS.set_num_threads(18)
 
+function save_bin(var, file)
+    ostream = open(file, "w")
+    serialize(ostream, var)
+    close(ostream)
+end
+
 # dtpth = "./"
 # if length(ARGS) == 1
 #     dtpth = ARGS[1]
@@ -9,7 +15,7 @@ BLAS.set_num_threads(18)
 # use dtpth*filename for string operation.
 
 h2 = 0.15                       # Or, read from command line later
-λ = (1-h2)/h2
+λ  = (1-h2)/h2
 
 # Note ID should in 4 groups:
 # -- 0: pedigree only
@@ -68,28 +74,35 @@ end;
     Q   = X2'X2
 end;
 
-@time begin                     # around R^-1 
+@time begin                     # LHS
+    println("Calculate LHS")
     C   = P + A11 .* λ
-    r1  = P*β                   # r1 and r2 are the right hand side of C
-    r2  = X1'y1                 #   in both LHS and RHS in the big equations
-    sol = C\[r1 r2]
+    pbt = [zeros(n0, nr); β[n0+1:nl,:]] # P*β
+    s1  = C\pbt
+
+    tmp = P*s1
+    tmp = pbt - tmp
+    tmp = β'tmp                 # 1st item in LHS, without left Zt', and right Zt
+    tmp = tmp - Q               # minus 2nd item in LHS
+    tmp = Zt'tmp
+    lhs = tmp*Zt
+
+    lhs = lhs + I.*λ            # the 3rd item in LHS
 end;
 
-@time begin                     # RHS and LHS
-    tmp = β - sol[:, 1:nr]
-    tmp = P*tmp
+@time begin                     # RHS
+    println("Calculate RHS")
+    xy1 = X1'y1
+    s2  = C\xy1
+    tmp = P*s2
+    tmp = xy1 - tmp
     tmp = β'tmp
-    tmp = tmp + Q
-    tmp = Zt'tmp
-    tmp = tmp*Zt
-    lhs = tmp + λ.*I
-    
-    tmp = X1'y1 - P*sol[:, nr+1]
-    tmp = β'tmp + X2'y2
+    tmp = tmp + X2'y2
     rhs = Zt'tmp
-end;                            # key point here is to write one matrix operation a time
+end
 
 @time begin                     # bhat and GEBV
+    println("bhat and EBV")
     bhat = lhs\rhs
     gbvt = Zt*bhat
     gbvv = Zv*bhat
