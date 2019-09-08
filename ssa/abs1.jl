@@ -44,5 +44,5 @@ end
     rhs = bz'* (y1-s2) + Z'y2
     bhat = lhs\rhs
     ebv = Z*bhat
-    writedlm("abs2.ebv", ebv)
+    writedlm("abs1.ebv", ebv)
 end
