@@ -30,12 +30,12 @@ h2 = 0.15                       # Or, read from command line later
     nt = n1+n2
     Z  = readdlm("t.cln")
     tp = mean(Z, dims=1)        # == 2p
-    tmp= sqrt.(tp.*(1 .- .5tp)) # == 2pq
-    Z  = (Z .- tp)./tmp         # standardization
+    # tmp= sqrt.(tp.*(1 .- .5tp)) # == 2pq
+    # Z  = (Z .- tp)./tmp         # standardization
     
     y1 = readdlm("1.y")[:,1]
     y2 = readdlm("2.y")[:,1]
-    save_bin(Z, "z.bin")
+    # save_bin(Z, "z.bin")
 end;
 
 @time begin
