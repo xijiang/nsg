@@ -2,26 +2,30 @@
 # Several thousand of ID were genotyped with 17k chips
 # 8k is majorly a subset of 17k,
 # it is handy to mask a few to check imputation.
+# -------------------
+# My previous imputation seems like too good to be true
+# So I am using less reference to impute
+# Hoping to find a concordance increment curve when the reference size increases
+
 prepare-a-working-directory(){
     if [ ! -d $base/work/a17k.g ]; then
-	source $base/fnc/g17ka.sh
+    	source $base/fnc/g17ka.sh
 	calc-ga17k
     fi
 
     work=$base/work/l2m.rate
-    mkdir -p $work/{pre,tst}
+    mkdir -p $work/{pre,tst,sample}
     cd $work
 }
 
-
 make-reference(){
     for chr in {1..26}; do
-	ln -sf $base/work/a17k.g/tmp.$chr.vcf.gz  pre/md.$chr.vcf.gz
-	ln -sf $base/work/a17k.g/imp.$chr.vcf.gz pre/ref.$chr.vcf.gz
+    	ln -sf $base/work/a17k.g/pre/$chr.vcf.gz  pre/md.$chr.vcf.gz
+	ln -sf $base/work/a17k.g/imp/$chr.vcf.gz pre/ref.$chr.vcf.gz
     done
     zcat pre/md.{1..26}.vcf.gz |
-	grep -v \# |
-	gawk '{print $3}' >md.snp
+    	grep -v \# |
+        gawk '{print $3}' >md.snp
 
     cat $maps/7327.map | 
 	gawk '{print $2}' >ld.snp
@@ -29,12 +33,11 @@ make-reference(){
 	$bin/impsnp md.snp >imputed.snp
 
     zcat pre/ref.1.vcf.gz |
-	head |
-	tail -1 |
+    	head |
+    	tail -1 |
 	tr '\t' '\n' |
 	tail -n+10 >md.id
 }
-
 
 determine-sizes(){
     nid=`zcat pre/md.1.vcf.gz | head | tail -1 | tr '\t' '\n' | wc | gawk '{print $1}'`
@@ -45,7 +48,7 @@ determine-sizes(){
     rpt=20
     if [ -f rates.txt ]; then rm rates.txt; fi
 }    
-    
+
 
 sample-n-mask-n-impute(){
     yes 0 | head -$msk > tmp

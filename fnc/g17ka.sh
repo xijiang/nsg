@@ -1,9 +1,10 @@
 calc-ga17k(){
     # Create a separate work space
-    #work=$base/work/`date +%Y-%m-%d-%H-%M-%S`
+    date
+    echo Prepare directory and files
     work=$base/work/a17k.g
-    mkdir -p $work
-    cd $work
+    mkdir -p $work/{pre,imp}
+    cd $work/pre
 
     # link the available genotype files here
     gfiles=`ls $genotypes/a17k/`
@@ -18,18 +19,28 @@ calc-ga17k(){
 
     $bin/mrg2bgl idinfo mapinfo $gfiles
 
+    date
+    echo Impute the missing genotypes
     for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-            gzip -c >tmp.$chr.vcf.gz
+    	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
+            gzip -c >$chr.vcf.gz
 
         java -jar $bin/beagle.jar \
-             gt=tmp.$chr.vcf.gz \
+             gt=$chr.vcf.gz \
              ne=$ne \
-             out=imp.$chr
+             out=../imp/$chr
     done
 
-    calc-g imp 17k-a.G
-    cp gmat.id 17k-a.G.id
+    date
+    echo Calculate G matrix
+    cd ../imp
+    zcat {1..26}.vcf.gz |
+	$bin/vcf2g |
+	$bin/vr1g >../17k-a.G
+
+    mv ../pre/gmat.id ../17k-a.G.id
+
+    cd ..
     cat 17k-a.G |
 	$bin/g2-3c 17k-a.G.id >17k-a.3c
 }
