@@ -70,8 +70,8 @@ else
 	    step-impute
 	    ;;
 	debug)
-	    source fnc/sswa.sh
-	    test-ss
+	    source fnc/imp-rate-l2m.sh
+	    test-lmr
 	    ;;
     esac
 fi

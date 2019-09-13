@@ -14,41 +14,69 @@ prepare-a-working-directory(){
     fi
 
     work=$base/work/l2m.rate
-    mkdir -p $work/{pre,tst,sample}
+    mkdir -p $work/{dat,tst}
+    dat=$work/dat
+    tst=$work/tst
     cd $work
 }
 
 make-reference(){
+    cd $dat
     for chr in {1..26}; do
-    	ln -sf $base/work/a17k.g/pre/$chr.vcf.gz  pre/md.$chr.vcf.gz
-	ln -sf $base/work/a17k.g/imp/$chr.vcf.gz pre/ref.$chr.vcf.gz
+    	ln -sf $base/work/a17k.g/pre/$chr.vcf.gz  md.$chr.vcf.gz
+	ln -sf $base/work/a17k.g/imp/$chr.vcf.gz ref.$chr.vcf.gz
     done
-    zcat pre/md.{1..26}.vcf.gz |
+
+    zcat md.{1..26}.vcf.gz |
     	grep -v \# |
-        gawk '{print $3}' >md.snp
+        gawk '{print $3}' >$work/md.snp
 
     cat $maps/7327.map | 
-	gawk '{print $2}' >ld.snp
-    cat ld.snp |
-	$bin/impsnp md.snp >imputed.snp
+	gawk '{print $2}' >$work/ld.snp
+    
+    cat $work/ld.snp |
+	$bin/impsnp $work/md.snp >$work/imputed.snp
 
-    zcat pre/ref.1.vcf.gz |
+    zcat ref.1.vcf.gz |
     	head |
     	tail -1 |
 	tr '\t' '\n' |
-	tail -n+10 >md.id
+	tail -n+10 > $work/md.id
 }
 
-determine-sizes(){
-    nid=`zcat pre/md.1.vcf.gz | head | tail -1 | tr '\t' '\n' | wc | gawk '{print $1}'`
-    let nid=nid-9
-    msk=500
-    let ref=nid-msk
+sample-g-id-n-impute(){
+    cd $tst
+    nid=$1			# include reference and ID to be masked
+    nmsk=50			# 50 are enough for imputation test
+    cat $work/md.id |
+	shuf |
+	head -n $nid |
+	sort -n >id.lst	# All ID in the reference
 
-    rpt=20
-    if [ -f rates.txt ]; then rm rates.txt; fi
-}    
+    let nref=nid-nmsk
+    yes 0 | head -$nref > tmp
+    yes 1 | head -$nmsk >>tmp
+    paste id.lst <(shuf tmp) >idnmsk
 
+    for chr in {24..26}; do
+	zcat $dat/ref.$chr.vcf.gz |
+	    $bin/subid id.lst |
+	    gzip -c > ref.$chr.vcf.gz
+	zcat $dat/md.$chr.vcf.gz  |
+	    $bin/subid id.lst |
+	    $bin/maskmd idnmsk $work/ld.snp |
+	    gzip -c >msk.$chr.vcf.gz
+	java -jar $bin/beagle.jar \
+	     gt=msk.$chr.vcf.gz \
+	     ne=$ne \
+	     out=imp.$chr
+    done
+
+    zcat imp.{24..26}.vcf.gz |
+	$bin/subvcf idnmsk $work/imputed.snp >imp.gt
+    zcat ref.{24..26}.vcf.gz |
+	$bin/subvcf idnmsk $work/imputed.snp >chp.gt
+}
 
 sample-n-mask-n-impute(){
     yes 0 | head -$msk > tmp
@@ -83,9 +111,7 @@ test-lmr(){
 
     make-reference
 
-    determine-sizes
-
-    sample-n-mask-n-impute
+    sample-g-id-n-impute 100
 }
 
 
