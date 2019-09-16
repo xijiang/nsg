@@ -10,17 +10,17 @@ calc-g600k(){
     
     # make ID info and map ready
     tail -n+2 $ids/id.lst |
-	gawk '{if(length($4)>2 && $7<2000 && $10==1) print $4, $2}' > idinfo
+	    gawk '{if(length($4)>2 && $7<2000 && $10==1) print $4, $2}' > idinfo
     tail -n+2 $ids/id.lst |
-	gawk '{if(length($4)>2 && $7>1999 && $9==10) print $4, $2}' >>idinfo
+	    gawk '{if(length($4)>2 && $7>1999 && $9==10) print $4, $2}' >>idinfo
     
     tail -n+2 $maps/sheep-snpchimp-v.4 |
-	gawk '{print $13, $11, $12}' > mapinfo
+	    gawk '{print $13, $11, $12}' > mapinfo
 
     $bin/mrg2bgl idinfo mapinfo $gfiles # linked here already
 
     for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
+	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
             gzip -c >tmp.$chr.vcf.gz
 
         java -jar $bin/beagle.jar \
@@ -32,5 +32,5 @@ calc-g600k(){
     calc-g imp hd-only.G
     cp gmat.id hd-only.G.id
     cat hd-only.G |
-	$bin/g2-3c hd-only.G.id >600k.G
+	    $bin/g2-3c hd-only.G.id >600k.G
 }

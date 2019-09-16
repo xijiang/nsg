@@ -54,7 +54,7 @@ else
 	    ld2md
 	    ;;
 	lmr|LMR|Lmr)
-	    source fnc/imp-rate-l2m.sh
+	    source fnc/l2m-imp-rate.sh
 	    lm-rate
 	    ;;
 	Lit|LIT|lit)
@@ -70,7 +70,7 @@ else
 	    step-impute
 	    ;;
 	debug)
-	    source fnc/imp-rate-l2m.sh
+	    source fnc/l2m-imp-rate.sh
 	    test-lmr
 	    ;;
     esac

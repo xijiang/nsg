@@ -11,25 +11,25 @@ calc-dnt(){
     cd $work
     # used 3 minutes on nmbu.org, single thread
     cat $phenotypes/NKSped2503.txt |
-	$bin/sortped >sorted.ped 2>ped.dict
+	    $bin/sortped >sorted.ped 2>ped.dict
 
     echo Prepare for Julia matrix A inverse scripts
     cat sorted.ped |
-	$bin/dnt
+	    $bin/dnt
 }
 
 litter-pht(){
     # Prepare some phenotypes
     if [ ! -f $work/litter.pht ]; then
-	cd $phenotypes
-	make
-	cat Litter-AnE.txt |
-	    ./chk-litter |
-	    ./id+a+e |
-	    $bin/match $work/ped.dict |
-	    sort -nk1 >$work/litter.pht
-	make clean
-	cd $work
+	    cd $phenotypes
+	    make
+	    cat Litter-AnE.txt |
+	        ./chk-litter |
+	        ./id+a+e |
+	        $bin/match $work/ped.dict |
+	        sort -nk1 >$work/litter.pht
+	    make clean
+	    cd $work
     fi
 }
 
@@ -37,15 +37,15 @@ groups-n-genotypes(){
     # calculate a G matrix in the training set
     dpth=$base/work/ld2md	# dependent path
     if [ ! -d $dpth ]; then
-	source $func/ld2md.sh
-	ld2md
+	    source $func/ld2md.sh
+	    ld2md
     fi
     work=$base/work/litter	# write back current work directory
     cd $work
 
     echo group genotypes into training and validation sets
     zcat $dpth/imp/{1..26}.vcf.gz |
-	$bin/groupgt ped.dict	# --> t.gt, for training;  v.gt, validation
+	    $bin/groupgt ped.dict	# --> t.gt, for training;  v.gt, validation
 
     gawk '{sub($1 FS, "")} {print $0}' t.gt   >training.zmt
     gawk '{print $1}'                  t.gt   >g.id

@@ -23,13 +23,13 @@ collect-ld-genotypes(){
         gawk '{if(length($3)>5 && $9==10) print $3, $2}' > ld.id
 
     cat $maps/7327.map | 
-	gawk '{print $2, $1, $4}' > ld.map
+	    gawk '{print $2, $1, $4}' > ld.map
 
     $bin/mrg2bgl ld.id ld.map $LD
     
     for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
-	    gzip -c >../pre/ld.$chr.vcf.gz
+	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
+	        gzip -c >../pre/ld.$chr.vcf.gz
     done
 }
 
@@ -46,7 +46,7 @@ collect-md-genotypes(){
     $bin/mrg2bgl md.id md.map $MD
 
     for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
+	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
             gzip -c >../pre/md.$chr.vcf.gz
     done
 }
@@ -56,11 +56,11 @@ merge-md-ld-then-impute(){
     # merge the 483 (HD) and 345 (LD) and impute the 345 to HD level
     cd $work/pre
     for chr in {26..1}; do
-	# left join ld.vcf to hd.vcf
-	# hd.{1..26}.vcf.gz ld.{1..26}.vcf.gz ---> tmp.{1..26}.vcf.gz
-	$bin/ljvcf <(zcat md.$chr.vcf.gz) <(zcat ld.$chr.vcf.gz) |
-	    gzip -c >tmp.vcf.gz
-	
+	    # left join ld.vcf to hd.vcf
+	    # hd.{1..26}.vcf.gz ld.{1..26}.vcf.gz ---> tmp.{1..26}.vcf.gz
+	    $bin/ljvcf <(zcat md.$chr.vcf.gz) <(zcat ld.$chr.vcf.gz) |
+	        gzip -c >tmp.vcf.gz
+	    
         java -jar $bin/beagle.jar \
              gt=tmp.vcf.gz \
              ne=$ne \
@@ -70,18 +70,18 @@ merge-md-ld-then-impute(){
     cd ..
     echo Calculate the G matrix
     zcat imp/{1..26}.vcf.gz|
-	$bin/vcf2g |
-	$bin/vr1g >ld-md.G
+	    $bin/vcf2g |
+	    $bin/vr1g >ld-md.G
 
     zcat imp/1.vcf.gz |
-	head |
-	tail -1 |
-	tr '\t' '\n' |
-	tail -n+10 >lm.id
+	    head |
+	    tail -1 |
+	    tr '\t' '\n' |
+	    tail -n+10 >lm.id
 
     echo Transform G-matrix to 3-column format
     cat ld-md.G |
-	$bin/g2-3c lm.id >lim.3c
+	    $bin/g2-3c lm.id >lim.3c
 }
 
 

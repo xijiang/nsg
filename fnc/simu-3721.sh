@@ -9,14 +9,14 @@ prepare-a-directory(){
     cd $work
 
     for i in $G7327 $G600K; do
-	ln -sf $genotypes/$i
+	    ln -sf $genotypes/$i
     done
 }
 
 
 prepare-loci(){
     cat $maps/$map7327 |
-	gawk
+	    gawk
 }
 
 

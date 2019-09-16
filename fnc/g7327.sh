@@ -11,15 +11,15 @@ calc-g7327(){
     
     # make ID info and map ready
     tail -n+2 $ids/id.lst |
-	gawk '{if(length($3)>2 && $9==10 && $7>1999) print $3, $2}' >idinfo
+	    gawk '{if(length($3)>2 && $9==10 && $7>1999) print $3, $2}' >idinfo
     
     cat $maps/7327.map | 
-	gawk '{print $2, $1, $4}' > mapinfo
+	    gawk '{print $2, $1, $4}' > mapinfo
 
     $bin/mrg2bgl idinfo mapinfo $gfiles
 
     for chr in {26..1}; do
-	java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
+	    java -jar $bin/beagle2vcf.jar $chr $chr.mrk $chr.bgl - |
             gzip -c >tmp.$chr.vcf.gz
 
         java -jar $bin/beagle.jar \
@@ -31,5 +31,5 @@ calc-g7327(){
     calc-g imp ld-only.G
     cp gmat.id ld-only.G.id
     cat ld-only.G |
-	$bin/g2-3c ld-only.G.id >7327.3c
+	    $bin/g2-3c ld-only.G.id >7327.3c
 }
