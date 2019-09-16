@@ -114,7 +114,7 @@ test-lmr(){
 
     make-reference
 
-    sample-g-id-n-impute
+    sample-g-id-n-impute 100
 }
 
 
