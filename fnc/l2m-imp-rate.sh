@@ -57,7 +57,7 @@ sample-g-id-n-impute(){
 	    sort -n >id.lst	# All ID in the reference
 
     let nref=nid-nmsk
-    cat <(yes 0 | head -$nref) <(yes 1 | head -$nmsk) |
+    cat <(yes 1 | head -$nref) <(yes 0 | head -$nmsk) |
         shuf >mask
 
     for chr in {1..26}; do
