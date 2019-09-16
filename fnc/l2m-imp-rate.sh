@@ -60,7 +60,7 @@ sample-g-id-n-impute(){
     cat <(yes 0 | head -$nref) <(yes 1 | head -$nmsk) |
         shuf >mask
 
-    for chr in {24..26}; do
+    for chr in {1..26}; do
 	    zcat $dat/ref.$chr.vcf.gz |
 	        $bin/subid id.lst |
 	        gzip -c > ref.$chr.vcf.gz
@@ -76,48 +76,22 @@ sample-g-id-n-impute(){
     
     paste id.lst mask |
         gawk '{if($2==0) print $1}' > mskt.id
-    zcat imp.{24..26}.vcf.gz |
+    zcat imp.{1..26}.vcf.gz |
     	$bin/subvcf mskt.id $work/imputed.snp >imp.gt
-    zcat ref.{24..26}.vcf.gz |
+    zcat ref.{1..26}.vcf.gz |
     	$bin/subvcf mskt.id $work/imputed.snp >ref.gt
     paste {ref,imp}.gt |
         $bin/cor-err >>rates.txt
 }
-
-sample-n-mask-n-impute(){
-    yes 0 | head -$msk > tmp
-    yes 1 | head -$ref >>tmp
-    cat tmp |
-	    shuf > mask.idx
-
-    paste mask.idx md.id |
-	    gawk '{if($1==0) print $2}' >mskt.id
-
-    for chr in {26..1}; do
-	    zcat pre/md.$chr.vcf.gz |
-	        $bin/maskmd mask.idx ld.snp |
-	        gzip >tst/msk.$chr.vcf.gz
-	    java -jar $bin/beagle.jar \
-	         gt=tst/msk.$chr.vcf.gz \
-	         ne=$ne \
-	         out=tst/imp.$chr
-    done
-    zcat tst/imp.{1..26}.vcf.gz |
-        $bin/subvcf mskt.id imputed.snp >imp.gt
-    zcat pre/ref.{1..26}.vcf.gz |
-        $bin/subvcf mskt.id imputed.snp >chp.gt
-
-    paste chp.gt imp.gt |
-        $bin/cor-err >>rates.txt
-}
-
 
 test-lmr(){
     prepare-a-working-directory
 
     make-reference
 
-    sample-g-id-n-impute 100
+    for smp in `seq 100 100 4750`; do
+        sample-g-id-n-impute $smp
+    done
 }
 
 
