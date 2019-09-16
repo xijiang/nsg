@@ -50,6 +50,8 @@ sample-g-id-n-impute(){
     cd $tst
     nid=$1			# include reference and ID to be masked
     nmsk=50			# 50 are enough for imputation test
+    if [ $nid -lt 100 ]; then let nid=100; fi
+    
     cat $work/md.id |
 	    shuf |
 	    head -n $nid |
@@ -60,24 +62,24 @@ sample-g-id-n-impute(){
     yes 1 | head -$nmsk >>tmp
     paste id.lst <(shuf tmp) >idnmsk
 
-    for chr in {24..26}; do
-	    zcat $dat/ref.$chr.vcf.gz |
-	        $bin/subid id.lst |
-	        gzip -c > ref.$chr.vcf.gz
-	    zcat $dat/md.$chr.vcf.gz  |
-	        $bin/subid id.lst |
-	        $bin/maskmd idnmsk $work/ld.snp |
-	        gzip -c >msk.$chr.vcf.gz
-	    java -jar $bin/beagle.jar \
-	         gt=msk.$chr.vcf.gz \
-	         ne=$ne \
-	         out=imp.$chr
-    done
-
-    zcat imp.{24..26}.vcf.gz |
-	    $bin/subvcf idnmsk $work/imputed.snp >imp.gt
-    zcat ref.{24..26}.vcf.gz |
-	    $bin/subvcf idnmsk $work/imputed.snp >chp.gt
+#    for chr in {24..26}; do
+#	    zcat $dat/ref.$chr.vcf.gz |
+#	        $bin/subid id.lst |
+#	        gzip -c > ref.$chr.vcf.gz
+#	    zcat $dat/md.$chr.vcf.gz  |
+#	        $bin/subid id.lst |
+#	        $bin/maskmd idnmsk $work/ld.snp |
+#	        gzip -c >msk.$chr.vcf.gz
+#	    java -jar $bin/beagle.jar \
+#	         gt=msk.$chr.vcf.gz \
+#	         ne=$ne \
+#	         out=imp.$chr
+#    done
+#
+#    zcat imp.{24..26}.vcf.gz |
+#	    $bin/subvcf idnmsk $work/imputed.snp >imp.gt
+#    zcat ref.{24..26}.vcf.gz |
+#	    $bin/subvcf idnmsk $work/imputed.snp >chp.gt
 }
 
 sample-n-mask-n-impute(){
@@ -112,6 +114,8 @@ test-lmr(){
     prepare-a-working-directory
 
     make-reference
+
+    sample-g-id-n-impute
 }
 
 
