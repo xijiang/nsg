@@ -89,9 +89,11 @@ test-lmr(){
 
     make-reference
 
-    for smp in `seq 100 100 4750`; do
-        sample-g-id-n-impute $smp
-    done
+    sample-g-id-n-impute 4000
+#    for smp in `seq 100 100 4750`; do
+#        echo $smp >>rates.txt
+#        sample-g-id-n-impute $smp
+#    done
 }
 
 
