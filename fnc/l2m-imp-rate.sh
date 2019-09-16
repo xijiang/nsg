@@ -61,10 +61,10 @@ sample-g-id-n-impute(){
     yes 1 | head -$nmsk >>tmp
     paste id.lst <(shuf tmp) >idnmsk
 
-#    for chr in {24..26}; do
-#	    zcat $dat/ref.$chr.vcf.gz |
-#	        $bin/subid id.lst |
-#	        gzip -c > ref.$chr.vcf.gz
+    for chr in {24..26}; do
+	    zcat $dat/ref.$chr.vcf.gz |
+	        $bin/subid id.lst |
+	        gzip -c > ref.$chr.vcf.gz
 #	    zcat $dat/md.$chr.vcf.gz  |
 #	        $bin/subid id.lst |
 #	        $bin/maskmd idnmsk $work/ld.snp |
@@ -73,7 +73,7 @@ sample-g-id-n-impute(){
 #	         gt=msk.$chr.vcf.gz \
 #	         ne=$ne \
 #	         out=imp.$chr
-#    done
+    done
 #
 #    zcat imp.{24..26}.vcf.gz |
 #	    $bin/subvcf idnmsk $work/imputed.snp >imp.gt

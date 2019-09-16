@@ -38,17 +38,18 @@ int main(int argc, char *argv[])
     int          chr, pos;
     string       snp;
     ss>>chr>>pos>>snp;
-    if(ld.find(snp)==ld.end()) cout<<line<<'\n';
+    if(ld.find(snp)!=ld.end()) cout<<line<<'\n'; // a shared locus
     else{
       cout<<chr<<'\t'<<pos<<'\t'<<snp;
       string tt;
       for(auto i=0; i<6; ++i){
-	ss>>tt;
-	cout<<'\t'<<tt;
+        ss>>tt;
+        cout<<'\t'<<tt;
       }
       for(auto&x:mid){
-	ss>>tt;
-	x ? cout<<'\t'<<tt : cout<<"\t./.";
+        ss>>tt;
+        if(x) cout<<'\t'<<tt;
+        else  cout<<"\t./.";
       }
       cout<<'\n';
     }
