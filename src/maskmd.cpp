@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
     if(line[1]!='#') break;	// Break @ the ID line
   }
 
-  for(string line; getline(cin, line);){
+  for(string line; getline(cin, line); cout<<'\n'){
     stringstream ss(line);
     int          chr, pos;
     string       snp;
     ss>>chr>>pos>>snp;
-    if(ld.find(snp)!=ld.end()) cout<<line<<'\n'; // a shared locus
+    if(ld.find(snp)!=ld.end()) cout<<line; // a shared locus
     else{
       cout<<chr<<'\t'<<pos<<'\t'<<snp;
       string tt;
@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
         if(x) cout<<'\t'<<tt;
         else  cout<<"\t./.";
       }
-      cout<<'\n';
     }
   }
     

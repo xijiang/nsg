@@ -57,28 +57,31 @@ sample-g-id-n-impute(){
 	    sort -n >id.lst	# All ID in the reference
 
     let nref=nid-nmsk
-    yes 0 | head -$nref > tmp
-    yes 1 | head -$nmsk >>tmp
-    paste id.lst <(shuf tmp) >idnmsk
+    cat <(yes 0 | head -$nref) <(yes 1 | head -$nmsk) |
+        shuf >mask
 
     for chr in {24..26}; do
 	    zcat $dat/ref.$chr.vcf.gz |
 	        $bin/subid id.lst |
 	        gzip -c > ref.$chr.vcf.gz
-#	    zcat $dat/md.$chr.vcf.gz  |
-#	        $bin/subid id.lst |
-#	        $bin/maskmd idnmsk $work/ld.snp |
-#	        gzip -c >msk.$chr.vcf.gz
-#	    java -jar $bin/beagle.jar \
-#	         gt=msk.$chr.vcf.gz \
-#	         ne=$ne \
-#	         out=imp.$chr
+	    zcat $dat/md.$chr.vcf.gz  |
+	        $bin/subid id.lst |
+	        $bin/maskmd mask $work/ld.snp |
+	        gzip -c >msk.$chr.vcf.gz
+	    java -jar $bin/beagle.jar \
+	         gt=msk.$chr.vcf.gz \
+	         ne=$ne \
+	         out=imp.$chr
     done
-#
-#    zcat imp.{24..26}.vcf.gz |
-#	    $bin/subvcf idnmsk $work/imputed.snp >imp.gt
-#    zcat ref.{24..26}.vcf.gz |
-#	    $bin/subvcf idnmsk $work/imputed.snp >chp.gt
+    
+    paste id.lst mask |
+        gawk '{if($2==0) print $1}' > mskt.id
+    zcat imp.{24..26}.vcf.gz |
+    	$bin/subvcf mskt.id $work/imputed.snp >imp.gt
+    zcat ref.{24..26}.vcf.gz |
+    	$bin/subvcf mskt.id $work/imputed.snp >ref.gt
+    paste {ref,imp}.gt |
+        $bin/cor-err >>rates.txt
 }
 
 sample-n-mask-n-impute(){

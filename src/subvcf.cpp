@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     cerr<<"Usage: zcat pre.{1..26}.vcf.gz | "<<argv[0]<<" id-list imputed-SNP >pre.g\n";
     return 1;
   }
-  set<string> imputed;		// input shared markers
+  set<string> imputed;		// input imputed markers
   {
     ifstream fin(argv[2]);
     for(string mrk; fin>>mrk; imputed.insert(mrk));
@@ -31,15 +31,15 @@ int main(int argc, char *argv[])
       string id;
       size_t oid{0};
       while(ss>>id){
-	if(ID.find(id)!=ID.end()){
-	  ID[id] = nid;
-	  ++oid;
-	}
-	++nid;
+        if(ID.find(id)!=ID.end()){
+          ID[id] = nid;
+          ++oid;
+        }
+        ++nid;
       }
       if(oid!=ID.size()){
-	cout<<"Some ID are not in the vcf files\n";
-	return 2;
+        cout<<"Some ID are not in the vcf files\n";
+        return 2;
       }
       break;
     }
