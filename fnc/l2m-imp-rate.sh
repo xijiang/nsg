@@ -49,7 +49,7 @@ make-reference(){
 sample-g-id-n-impute(){
     cd $tst
     nid=$1			# include reference and ID to be masked
-    nmsk=50			# 50 are enough for imputation test
+    nmsk=$2			# 50 are enough for imputation test
     
     cat $work/md.id |
 	    shuf |
@@ -85,15 +85,7 @@ sample-g-id-n-impute(){
 }
 
 test-lmr(){
-    prepare-a-working-directory
-
-    make-reference
-
-    sample-g-id-n-impute 4000
-#    for smp in `seq 100 100 4750`; do
-#        echo $smp >>rates.txt
-#        sample-g-id-n-impute $smp
-#    done
+    echo Use lmr option
 }
 
 
@@ -102,9 +94,10 @@ lm-rate(){
 
     make-reference
 
-    determine-sizes
-
-    for i in `seq $rpt`; do
-	    sample-n-mask-n-impute
+    for nto in 50 100 150; do
+        for nfra in `seq 200 100 4750`; do
+            echo $nfra $nto >>rates.txt
+            sample-g-id-n-impute $nfra $nto
+        done
     done
 }
