@@ -50,7 +50,6 @@ sample-g-id-n-impute(){
     cd $tst
     nid=$1			# include reference and ID to be masked
     nmsk=50			# 50 are enough for imputation test
-    if [ $nid -lt 100 ]; then let nid=100; fi
     
     cat $work/md.id |
 	    shuf |
