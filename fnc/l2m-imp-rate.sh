@@ -19,6 +19,8 @@ prepare-a-working-directory(){
     mkdir -p $work/{dat,tst}
     dat=$work/dat
     tst=$work/tst
+    rst=$work/rates.txt
+    touch $rst
     cd $work
 }
 
@@ -81,7 +83,7 @@ sample-g-id-n-impute(){
     zcat ref.{1..26}.vcf.gz |
     	$bin/subvcf mskt.id $work/imputed.snp >ref.gt
     paste {ref,imp}.gt |
-        $bin/cor-err >>rates.txt
+        $bin/cor-err >>$rst
 }
 
 test-lmr(){
@@ -96,8 +98,21 @@ lm-rate(){
 
     for nto in 50 100 150; do
         for nfra in `seq 200 100 4750`; do
-            echo $nfra $nto >>rates.txt
+            echo $nfra $nto >>$rst
             sample-g-id-n-impute $nfra $nto
         done
     done
+
+    $bin/l2mcol < $rst >6c
+    ## some Julia codes below for plotting a figure
+    #using DelimitedFiles, Plots
+    #rst = readdlm("6c")
+    #x = 200:100:2001
+    #p1=plot(x, dat[:,[1,3,5]],
+    #        xlabel="Total number of ID (imputed+reference)",
+    #        ylabel="Imputation error rate",
+    #        label=["imp=50" "imp=100" "imp=150"],
+    #        lw=2, minorticks=200:100:2001,
+    #        dpi=300)
+    #savefig("impute.png")
 }
