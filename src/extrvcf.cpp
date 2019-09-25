@@ -21,10 +21,8 @@ int main(int argc, char *argv[])
   set<string> ld;
   for(string snp; fin>>snp; ld.insert(snp));
 
-  for(string line; getline(cin, line);){
-    cout<<line<<'\n';
+  for(string line; getline(cin, line);)
     if(line[1]!='#') break;	// Break @ the ID line
-  }
 
   for(string line; getline(cin, line); cout<<'\n'){
     stringstream ss(line);
