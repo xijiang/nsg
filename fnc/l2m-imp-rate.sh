@@ -13,7 +13,7 @@ prepare-a-working-directory(){
 	    calc-ga17k
     fi
 
-    work=$base/work/test-l2m
+    work=$base/work/beagle-test
     if [ -d $work ]; then rm -rf $work; fi # for debug purpose
     
     mkdir -p $work/{dat,tst}
@@ -165,7 +165,7 @@ test-lmr(){
 
     for nto in `seq 50 100 2001`; do
         echo 1000 $nto >>$rst
-        test-beagle-opt 1000 $nt
+        test-beagle-opt 1000 $nto
     done
     
     # echo Use option lmr
