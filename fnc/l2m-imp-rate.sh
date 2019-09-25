@@ -57,9 +57,9 @@ test-beagle-opt(){
 
     cat $work/md.id |
 	    shuf |
-	    head -n $nid >id.ist
-    head -n $nref >ref.id
-    tail -n $nmsk >msk.id
+	    head -n $nid >id.lst
+    head -n $nref id.lst >ref.id
+    tail -n $nmsk id.lst >msk.id
 
     for chr in {1..26}; do
         zcat $dat/ref.$chr.vcf.gz |
