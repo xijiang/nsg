@@ -10,3 +10,6 @@ all:    ${target}
 mv:
 	mkdir -p ../bin
 	mv ${target} ../bin
+.PHONY: clean
+clean:
+	rm -f ${target}
