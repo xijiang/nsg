@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
       for(auto i=1; i<9; ++i) cout<<'\t'<<tstr[i];
       for(string gt; ss>>gt; cout<<"\t./.");
     }
-    cout<<'\n';
   }
     
   return 0;

@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
       cout<<tstr[2]<<'\t';
       for(string gt; ss>>gt; cout<<gt[0]<<gt[2]);
     }
-    cout<<'\n';
   }
     
   return 0;

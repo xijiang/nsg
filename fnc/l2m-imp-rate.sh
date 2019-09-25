@@ -65,9 +65,6 @@ test-beagle-opt(){
         zcat $dat/ref.$chr.vcf.gz |
             $bin/subid ref.id |
             gzip -c >ref.$chr.vcf.gz
-        zcat $dat/ref.$chr.vcf.gz |
-            $bin/subid msk.id |
-            $bin/extrvcf ld.snp >cmp.gt
         zcat $dat/md.$chr.vcf.gz |
             $bin/subid msk.id |
             $bin/mskloci $work/ld.snp |
@@ -77,8 +74,6 @@ test-beagle-opt(){
              gt=msk.$chr.vcf.gz \
              ne=$ne \
              out=imp.$chr
-        zcat imp.$chr.vcf.gz |
-            $bin/extrvcf ld.snp >imp.gt
     done
     zcat $dat/ref.{1..26}.vcf.gz |
         $bin/subid msk.id |
